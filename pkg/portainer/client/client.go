@@ -1,6 +1,9 @@
 package client
 
 import (
+	"crypto/tls"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/portainer/client-api-go/v2/client"
@@ -42,8 +45,13 @@ type PortainerAPIClient interface {
 
 // PortainerClient is a wrapper around the Portainer SDK client
 // that provides simplified access to Portainer API functionality.
+// It also includes an HTTP client for direct Portainer API calls
+// not covered by the SDK.
 type PortainerClient struct {
-	cli PortainerAPIClient
+	cli       PortainerAPIClient
+	serverURL string
+	token     string
+	httpCli   *http.Client
 }
 
 // ClientOption defines a function that configures a PortainerClient.
@@ -82,6 +90,45 @@ func NewPortainerClient(serverURL string, token string, opts ...ClientOption) *P
 	}
 
 	return &PortainerClient{
-		cli: client.NewPortainerClient(serverURL, token, client.WithSkipTLSVerify(options.skipTLSVerify)),
+		cli:       client.NewPortainerClient(serverURL, token, client.WithSkipTLSVerify(options.skipTLSVerify)),
+		serverURL: serverURL,
+		token:     token,
+		httpCli: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: options.skipTLSVerify,
+				},
+			},
+		},
 	}
+}
+
+// DoAPIRequest makes a direct HTTP request to the Portainer API.
+// This is used for API endpoints not covered by the client-api-go SDK.
+//
+// Parameters:
+//   - method: The HTTP method (GET, POST, PUT, DELETE)
+//   - path: The API path (e.g., "/stacks"). Must include leading slash.
+//   - body: The request body (can be nil)
+//
+// Returns:
+//   - *http.Response: The raw HTTP response (caller must close body)
+//   - error: Any error that occurred during the request
+func (c *PortainerClient) DoAPIRequest(method, path string, body io.Reader) (*http.Response, error) {
+	url := fmt.Sprintf("%s/api%s", c.serverURL, path)
+
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create API request: %w", err)
+	}
+
+	req.Header.Set("X-API-Key", c.token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpCli.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send API request: %w", err)
+	}
+
+	return resp, nil
 }

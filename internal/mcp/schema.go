@@ -4,39 +4,92 @@ import "slices"
 
 // Tool names as defined in the YAML file
 const (
-	ToolCreateEnvironmentGroup             = "createEnvironmentGroup"
-	ToolListEnvironmentGroups              = "listEnvironmentGroups"
-	ToolUpdateEnvironmentGroup             = "updateEnvironmentGroup"
+	// Access Groups
 	ToolCreateAccessGroup                  = "createAccessGroup"
 	ToolListAccessGroups                   = "listAccessGroups"
-	ToolUpdateAccessGroup                  = "updateAccessGroup"
+	ToolUpdateAccessGroupName              = "updateAccessGroupName"
+	ToolUpdateAccessGroupUserAccesses      = "updateAccessGroupUserAccesses"
+	ToolUpdateAccessGroupTeamAccesses      = "updateAccessGroupTeamAccesses"
 	ToolAddEnvironmentToAccessGroup        = "addEnvironmentToAccessGroup"
 	ToolRemoveEnvironmentFromAccessGroup   = "removeEnvironmentFromAccessGroup"
+	ToolDeleteAccessGroup                  = "deleteAccessGroup"
+
+	// Environments
 	ToolListEnvironments                   = "listEnvironments"
 	ToolUpdateEnvironment                  = "updateEnvironment"
+	ToolUpdateEnvironmentTags              = "updateEnvironmentTags"
+	ToolUpdateEnvironmentUserAccesses      = "updateEnvironmentUserAccesses"
+	ToolUpdateEnvironmentTeamAccesses      = "updateEnvironmentTeamAccesses"
+
+	// Environment Groups (Edge Groups)
+	ToolCreateEnvironmentGroup             = "createEnvironmentGroup"
+	ToolListEnvironmentGroups              = "listEnvironmentGroups"
+	ToolUpdateEnvironmentGroupName         = "updateEnvironmentGroupName"
+	ToolUpdateEnvironmentGroupEnvironments = "updateEnvironmentGroupEnvironments"
+	ToolUpdateEnvironmentGroupTags         = "updateEnvironmentGroupTags"
+	ToolDeleteEnvironmentGroup             = "deleteEnvironmentGroup"
+
+	// Edge Stacks
+	ToolListStacks                         = "listStacks"
 	ToolGetStackFile                       = "getStackFile"
 	ToolCreateStack                        = "createStack"
-	ToolListStacks                         = "listStacks"
 	ToolUpdateStack                        = "updateStack"
+	ToolDeleteStack                        = "deleteStack"
+
+	// Docker Stacks
+	ToolListDockerStacks                   = "listDockerStacks"
+	ToolGetDockerStackFile                 = "getDockerStackFile"
+	ToolCreateDockerStack                  = "createDockerStack"
+	ToolUpdateDockerStack                  = "updateDockerStack"
+	ToolDeleteDockerStack                  = "deleteDockerStack"
+	ToolStartDockerStack                   = "startDockerStack"
+	ToolStopDockerStack                    = "stopDockerStack"
+
+	// Tags
 	ToolCreateEnvironmentTag               = "createEnvironmentTag"
 	ToolListEnvironmentTags                = "listEnvironmentTags"
+	ToolDeleteTag                          = "deleteTag"
+
+	// Teams
 	ToolCreateTeam                         = "createTeam"
 	ToolListTeams                          = "listTeams"
 	ToolUpdateTeamName                     = "updateTeamName"
 	ToolUpdateTeamMembers                  = "updateTeamMembers"
+	ToolDeleteTeam                         = "deleteTeam"
+
+	// Users
 	ToolListUsers                          = "listUsers"
 	ToolUpdateUserRole                     = "updateUserRole"
+
+	// Settings
 	ToolGetSettings                        = "getSettings"
-	ToolUpdateAccessGroupName              = "updateAccessGroupName"
-	ToolUpdateAccessGroupUserAccesses      = "updateAccessGroupUserAccesses"
-	ToolUpdateAccessGroupTeamAccesses      = "updateAccessGroupTeamAccesses"
-	ToolUpdateEnvironmentTags              = "updateEnvironmentTags"
-	ToolUpdateEnvironmentUserAccesses      = "updateEnvironmentUserAccesses"
-	ToolUpdateEnvironmentTeamAccesses      = "updateEnvironmentTeamAccesses"
-	ToolUpdateEnvironmentGroupName         = "updateEnvironmentGroupName"
-	ToolUpdateEnvironmentGroupEnvironments = "updateEnvironmentGroupEnvironments"
-	ToolUpdateEnvironmentGroupTags         = "updateEnvironmentGroupTags"
+	ToolUpdateSettings                     = "updateSettings"
+
+	// Registries
+	ToolListRegistries                     = "listRegistries"
+	ToolCreateRegistry                     = "createRegistry"
+	ToolDeleteRegistry                     = "deleteRegistry"
+
+	// Edge Jobs
+	ToolListEdgeJobs                       = "listEdgeJobs"
+	ToolGetEdgeJob                         = "getEdgeJob"
+	ToolCreateEdgeJob                      = "createEdgeJob"
+	ToolDeleteEdgeJob                      = "deleteEdgeJob"
+
+	// Custom Templates
+	ToolListCustomTemplates                = "listCustomTemplates"
+	ToolCreateCustomTemplate               = "createCustomTemplate"
+	ToolDeleteCustomTemplate               = "deleteCustomTemplate"
+
+	// Webhooks
+	ToolListWebhooks                       = "listWebhooks"
+	ToolCreateWebhook                      = "createWebhook"
+	ToolDeleteWebhook                      = "deleteWebhook"
+
+	// Docker Proxy
 	ToolDockerProxy                        = "dockerProxy"
+
+	// Kubernetes Proxy
 	ToolKubernetesProxy                    = "kubernetesProxy"
 	ToolKubernetesProxyStripped            = "getKubernetesResourceStripped"
 )

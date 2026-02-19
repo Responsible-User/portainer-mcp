@@ -1,3 +1,4 @@
 dist
 .dev
 .tmp
+support-docs/portainer-docs/*

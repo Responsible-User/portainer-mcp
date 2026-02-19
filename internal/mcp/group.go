@@ -18,6 +18,7 @@ func (s *PortainerMCPServer) AddEnvironmentGroupFeatures() {
 		s.addToolIfExists(ToolUpdateEnvironmentGroupName, s.HandleUpdateEnvironmentGroupName())
 		s.addToolIfExists(ToolUpdateEnvironmentGroupEnvironments, s.HandleUpdateEnvironmentGroupEnvironments())
 		s.addToolIfExists(ToolUpdateEnvironmentGroupTags, s.HandleUpdateEnvironmentGroupTags())
+		s.addToolIfExists(ToolDeleteEnvironmentGroup, s.HandleDeleteEnvironmentGroup())
 	}
 }
 
@@ -126,5 +127,23 @@ func (s *PortainerMCPServer) HandleUpdateEnvironmentGroupTags() server.ToolHandl
 		}
 
 		return mcp.NewToolResultText("Environment group tags updated successfully"), nil
+	}
+}
+
+func (s *PortainerMCPServer) HandleDeleteEnvironmentGroup() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		id, err := parser.GetInt("id", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid id parameter", err), nil
+		}
+
+		err = s.cli.DeleteEnvironmentGroup(id)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to delete environment group", err), nil
+		}
+
+		return mcp.NewToolResultText("Environment group deleted successfully"), nil
 	}
 }

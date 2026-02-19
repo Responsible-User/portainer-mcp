@@ -17,6 +17,7 @@ func (s *PortainerMCPServer) AddTeamFeatures() {
 		s.addToolIfExists(ToolCreateTeam, s.HandleCreateTeam())
 		s.addToolIfExists(ToolUpdateTeamName, s.HandleUpdateTeamName())
 		s.addToolIfExists(ToolUpdateTeamMembers, s.HandleUpdateTeamMembers())
+		s.addToolIfExists(ToolDeleteTeam, s.HandleDeleteTeam())
 	}
 }
 
@@ -97,5 +98,23 @@ func (s *PortainerMCPServer) HandleUpdateTeamMembers() server.ToolHandlerFunc {
 		}
 
 		return mcp.NewToolResultText("Team members updated successfully"), nil
+	}
+}
+
+func (s *PortainerMCPServer) HandleDeleteTeam() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		id, err := parser.GetInt("id", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid id parameter", err), nil
+		}
+
+		err = s.cli.DeleteTeam(id)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to delete team", err), nil
+		}
+
+		return mcp.NewToolResultText("Team deleted successfully"), nil
 	}
 }

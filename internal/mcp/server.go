@@ -10,13 +10,16 @@ import (
 	"github.com/portainer/portainer-mcp/pkg/portainer/client"
 	"github.com/portainer/portainer-mcp/pkg/portainer/models"
 	"github.com/portainer/portainer-mcp/pkg/toolgen"
+	"golang.org/x/mod/semver"
 )
 
 const (
 	// MinimumToolsVersion is the minimum supported version of the tools.yaml file
 	MinimumToolsVersion = "1.0"
-	// SupportedPortainerVersion is the version of Portainer that is supported by this tool
-	SupportedPortainerVersion = "2.31.2"
+	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
+	MinSupportedPortainerVersion = "2.27.0"
+	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
+	MaxSupportedPortainerVersion = "2.33"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
@@ -24,12 +27,14 @@ type PortainerClient interface {
 	// Tag methods
 	GetEnvironmentTags() ([]models.EnvironmentTag, error)
 	CreateEnvironmentTag(name string) (int, error)
+	DeleteTag(id int) error
 
 	// Environment methods
 	GetEnvironments() ([]models.Environment, error)
 	UpdateEnvironmentTags(id int, tagIds []int) error
 	UpdateEnvironmentUserAccesses(id int, userAccesses map[int]string) error
 	UpdateEnvironmentTeamAccesses(id int, teamAccesses map[int]string) error
+	UpdateEnvironment(id int, name, publicURL string, groupID int) error
 
 	// Environment Group methods
 	GetEnvironmentGroups() ([]models.Group, error)
@@ -37,6 +42,7 @@ type PortainerClient interface {
 	UpdateEnvironmentGroupName(id int, name string) error
 	UpdateEnvironmentGroupEnvironments(id int, environmentIds []int) error
 	UpdateEnvironmentGroupTags(id int, tagIds []int) error
+	DeleteEnvironmentGroup(id int) error
 
 	// Access Group methods
 	GetAccessGroups() ([]models.AccessGroup, error)
@@ -46,18 +52,30 @@ type PortainerClient interface {
 	UpdateAccessGroupTeamAccesses(id int, teamAccesses map[int]string) error
 	AddEnvironmentToAccessGroup(id int, environmentId int) error
 	RemoveEnvironmentFromAccessGroup(id int, environmentId int) error
+	DeleteAccessGroup(id int) error
 
-	// Stack methods
+	// Edge Stack methods
 	GetStacks() ([]models.Stack, error)
 	GetStackFile(id int) (string, error)
 	CreateStack(name string, file string, environmentGroupIds []int) (int, error)
 	UpdateStack(id int, file string, environmentGroupIds []int) error
+	DeleteEdgeStack(id int) error
+
+	// Docker Stack methods
+	GetDockerStacks() ([]models.DockerStack, error)
+	GetDockerStackFile(id int) (string, error)
+	CreateDockerStack(endpointID int, name, composeFileContent string, env []models.StackEnvVar) (int, error)
+	UpdateDockerStack(id, endpointID int, composeFileContent string, env []models.StackEnvVar, prune, pullImage bool) error
+	DeleteDockerStack(id, endpointID int) error
+	StartDockerStack(id, endpointID int) error
+	StopDockerStack(id, endpointID int) error
 
 	// Team methods
 	CreateTeam(name string) (int, error)
 	GetTeams() ([]models.Team, error)
 	UpdateTeamName(id int, name string) error
 	UpdateTeamMembers(id int, userIds []int) error
+	DeleteTeam(id int) error
 
 	// User methods
 	GetUsers() ([]models.User, error)
@@ -65,9 +83,31 @@ type PortainerClient interface {
 
 	// Settings methods
 	GetSettings() (models.PortainerSettings, error)
+	UpdateSettings(settingsJSON string) error
 
 	// Version methods
 	GetVersion() (string, error)
+
+	// Registry methods
+	GetRegistries() ([]models.Registry, error)
+	CreateRegistry(req models.RegistryCreateRequest) (int, error)
+	DeleteRegistry(id int) error
+
+	// Edge Job methods
+	GetEdgeJobs() ([]models.EdgeJob, error)
+	GetEdgeJob(id int) (models.EdgeJob, error)
+	CreateEdgeJob(req models.EdgeJobCreateRequest) (int, error)
+	DeleteEdgeJob(id int) error
+
+	// Custom Template methods
+	GetCustomTemplates() ([]models.CustomTemplate, error)
+	CreateCustomTemplate(req models.CustomTemplateCreateRequest) (int, error)
+	DeleteCustomTemplate(id int) error
+
+	// Webhook methods
+	GetWebhooks() ([]models.Webhook, error)
+	CreateWebhook(req models.WebhookCreateRequest) (int, error)
+	DeleteWebhook(id int) error
 
 	// Docker Proxy methods
 	ProxyDockerRequest(opts models.DockerProxyRequestOptions) (*http.Response, error)
@@ -163,8 +203,8 @@ func NewPortainerMCPServer(serverURL, token, toolsPath string, options ...Server
 			return nil, fmt.Errorf("failed to get Portainer server version: %w", err)
 		}
 
-		if version != SupportedPortainerVersion {
-			return nil, fmt.Errorf("unsupported Portainer server version: %s, only version %s is supported", version, SupportedPortainerVersion)
+		if err := checkPortainerVersion(version); err != nil {
+			return nil, err
 		}
 	}
 
@@ -179,6 +219,30 @@ func NewPortainerMCPServer(serverURL, token, toolsPath string, options ...Server
 		tools:    tools,
 		readOnly: opts.readOnly,
 	}, nil
+}
+
+// checkPortainerVersion validates that the given Portainer server version
+// falls within the supported range [MinSupportedPortainerVersion, MaxSupportedPortainerVersion].
+func checkPortainerVersion(version string) error {
+	// semver requires a "v" prefix
+	v := "v" + version
+	min := "v" + MinSupportedPortainerVersion
+	max := "v" + MaxSupportedPortainerVersion
+
+	if !semver.IsValid(v) {
+		return fmt.Errorf("invalid Portainer server version format: %s", version)
+	}
+
+	if semver.Compare(v, min) < 0 {
+		return fmt.Errorf("unsupported Portainer server version: %s, minimum supported version is %s", version, MinSupportedPortainerVersion)
+	}
+
+	// Compare only major.minor for the max check so any patch version of 2.33.x is accepted
+	if semver.Compare(semver.MajorMinor(v), semver.MajorMinor(max)) > 0 {
+		return fmt.Errorf("unsupported Portainer server version: %s, maximum supported version is %s", version, MaxSupportedPortainerVersion)
+	}
+
+	return nil
 }
 
 // Start begins listening for MCP protocol messages on standard input/output.

@@ -17,6 +17,7 @@ func (s *PortainerMCPServer) AddStackFeatures() {
 	if !s.readOnly {
 		s.addToolIfExists(ToolCreateStack, s.HandleCreateStack())
 		s.addToolIfExists(ToolUpdateStack, s.HandleUpdateStack())
+		s.addToolIfExists(ToolDeleteStack, s.HandleDeleteEdgeStack())
 	}
 }
 
@@ -107,5 +108,23 @@ func (s *PortainerMCPServer) HandleUpdateStack() server.ToolHandlerFunc {
 		}
 
 		return mcp.NewToolResultText("Stack updated successfully"), nil
+	}
+}
+
+func (s *PortainerMCPServer) HandleDeleteEdgeStack() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		id, err := parser.GetInt("id", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid id parameter", err), nil
+		}
+
+		err = s.cli.DeleteEdgeStack(id)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to delete edge stack", err), nil
+		}
+
+		return mcp.NewToolResultText("Edge stack deleted successfully"), nil
 	}
 }

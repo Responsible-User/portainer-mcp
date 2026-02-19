@@ -1,5 +1,5 @@
 ---
-version: v1.2
+version: v1.3
 tools:
   ## Access Groups
   ## An access group is the equivalent of an Endpoint Group in Portainer.
@@ -158,6 +158,19 @@ tools:
       destructiveHint: true
       idempotentHint: true
       openWorldHint: false
+  - name: deleteAccessGroup
+    description: Delete an access group.
+    parameters:
+      - name: id
+        description: The ID of the access group to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Access Group
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
   ## Environment
   ## ------------------------------------------------------------
   - name: listEnvironments
@@ -265,6 +278,30 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: false
+  - name: updateEnvironment
+    description: >-
+      Update an environment's name, public URL, and/or group ID.
+      At least one of name, publicURL, or groupID should be provided.
+    parameters:
+      - name: id
+        description: The ID of the environment to update
+        type: number
+        required: true
+      - name: name
+        description: The new name for the environment. Leave empty to keep unchanged.
+        type: string
+      - name: publicURL
+        description: The new public URL for the environment. Leave empty to keep unchanged.
+        type: string
+      - name: groupID
+        description: The new group ID for the environment. Use 0 or omit to keep unchanged.
+        type: number
+    annotations:
+      title: Update Environment
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
   ## Environment Groups
   ## An environment group is the equivalent of an Edge Group in Portainer.
   ## ------------------------------------------------------------
@@ -358,6 +395,19 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: false
+  - name: deleteEnvironmentGroup
+    description: Delete an environment group. Environment groups are the equivalent of Edge Groups in Portainer.
+    parameters:
+      - name: id
+        description: The ID of the environment group to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Environment Group
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
   ## Settings
   ## ------------------------------------------------------------
   - name: getSettings
@@ -365,6 +415,23 @@ tools:
     annotations:
       title: Get Settings
       readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: updateSettings
+    description: >-
+      Update Portainer server settings. Pass a JSON string containing the settings fields to update.
+      Only include fields you want to change. Refer to the Portainer API documentation for available settings fields.
+    parameters:
+      - name: settingsJSON
+        description: >-
+          A JSON string containing the settings fields to update.
+          Example: '{"EnableTelemetry": false, "LogoURL": "https://example.com/logo.png"}'
+        type: string
+        required: true
+    annotations:
+      title: Update Settings
+      readOnlyHint: false
       destructiveHint: false
       idempotentHint: true
       openWorldHint: false
@@ -450,6 +517,150 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: false
+  - name: deleteStack
+    description: Delete an edge stack.
+    parameters:
+      - name: id
+        description: The ID of the edge stack to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Edge Stack
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+  ## Docker Stacks (Standalone)
+  ## ------------------------------------------------------------
+  - name: listDockerStacks
+    description: List all Docker standalone stacks across all environments.
+    annotations:
+      title: List Docker Stacks
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getDockerStackFile
+    description: Get the compose file content for a specific Docker standalone stack.
+    parameters:
+      - name: id
+        description: The ID of the Docker stack to get the compose file for
+        type: number
+        required: true
+    annotations:
+      title: Get Docker Stack File
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createDockerStack
+    description: >-
+      Create a new Docker standalone stack on a specific environment.
+      The stack is defined using a Docker Compose file.
+    parameters:
+      - name: environmentId
+        description: The ID of the environment to create the stack on
+        type: number
+        required: true
+      - name: name
+        description: >-
+          Name of the stack. Stack name must only consist of lowercase alpha
+          characters, numbers, hyphens, or underscores as well as start with a
+          lowercase character or number.
+        type: string
+        required: true
+      - name: file
+        description: >-
+          Content of the Docker Compose file. Must be a valid docker-compose.yml file.
+          Example: "services:\n  web:\n    image: nginx"
+        type: string
+        required: true
+    annotations:
+      title: Create Docker Stack
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: updateDockerStack
+    description: >-
+      Update an existing Docker standalone stack's compose file.
+    parameters:
+      - name: id
+        description: The ID of the Docker stack to update
+        type: number
+        required: true
+      - name: environmentId
+        description: The ID of the environment the stack belongs to
+        type: number
+        required: true
+      - name: file
+        description: >-
+          Updated content of the Docker Compose file.
+        type: string
+        required: true
+      - name: prune
+        description: Whether to prune services that are no longer defined in the compose file. Defaults to false.
+        type: boolean
+      - name: pullImage
+        description: Whether to pull the latest image before deploying. Defaults to false.
+        type: boolean
+    annotations:
+      title: Update Docker Stack
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteDockerStack
+    description: Delete a Docker standalone stack.
+    parameters:
+      - name: id
+        description: The ID of the Docker stack to delete
+        type: number
+        required: true
+      - name: environmentId
+        description: The ID of the environment the stack belongs to
+        type: number
+        required: true
+    annotations:
+      title: Delete Docker Stack
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+  - name: startDockerStack
+    description: Start a stopped Docker standalone stack.
+    parameters:
+      - name: id
+        description: The ID of the Docker stack to start
+        type: number
+        required: true
+      - name: environmentId
+        description: The ID of the environment the stack belongs to
+        type: number
+        required: true
+    annotations:
+      title: Start Docker Stack
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: stopDockerStack
+    description: Stop a running Docker standalone stack.
+    parameters:
+      - name: id
+        description: The ID of the Docker stack to stop
+        type: number
+        required: true
+      - name: environmentId
+        description: The ID of the environment the stack belongs to
+        type: number
+        required: true
+    annotations:
+      title: Stop Docker Stack
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
   ## Tags
   ## ------------------------------------------------------------
   - name: createEnvironmentTag
@@ -471,6 +682,19 @@ tools:
       title: List Environment Tags
       readOnlyHint: true
       destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteTag
+    description: Delete an environment tag.
+    parameters:
+      - name: id
+        description: The ID of the tag to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Tag
+      readOnlyHint: false
+      destructiveHint: true
       idempotentHint: true
       openWorldHint: false
   ## Teams
@@ -535,6 +759,19 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: false
+  - name: deleteTeam
+    description: Delete a team.
+    parameters:
+      - name: id
+        description: The ID of the team to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Team
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
 
   ## Users
   ## ------------------------------------------------------------
@@ -565,6 +802,235 @@ tools:
       title: Update User Role
       readOnlyHint: false
       destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Registries
+  ## ------------------------------------------------------------
+  - name: listRegistries
+    description: List all container registries configured in Portainer.
+    annotations:
+      title: List Registries
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createRegistry
+    description: >-
+      Create a new container registry in Portainer.
+      Registry types: 1 = Quay.io, 2 = Azure Container Registry, 3 = Custom Registry,
+      4 = GitLab, 5 = ProGet, 6 = DockerHub, 7 = Amazon ECR, 8 = GitHub Container Registry.
+    parameters:
+      - name: name
+        description: The name of the registry
+        type: string
+        required: true
+      - name: type
+        description: "The type of registry. Valid values: 1 (Quay.io), 2 (Azure), 3 (Custom), 4 (GitLab), 5 (ProGet), 6 (DockerHub), 7 (ECR), 8 (GitHub)"
+        type: number
+        required: true
+      - name: url
+        description: The URL of the registry (e.g., https://registry.example.com)
+        type: string
+        required: true
+      - name: authentication
+        description: Whether authentication is required to access the registry. Defaults to false.
+        type: boolean
+      - name: username
+        description: The username for registry authentication. Required when authentication is true.
+        type: string
+      - name: password
+        description: The password for registry authentication. Required when authentication is true.
+        type: string
+    annotations:
+      title: Create Registry
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: deleteRegistry
+    description: Delete a container registry from Portainer.
+    parameters:
+      - name: id
+        description: The ID of the registry to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Registry
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Edge Jobs
+  ## ------------------------------------------------------------
+  - name: listEdgeJobs
+    description: List all edge jobs.
+    annotations:
+      title: List Edge Jobs
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getEdgeJob
+    description: Get details of a specific edge job.
+    parameters:
+      - name: id
+        description: The ID of the edge job
+        type: number
+        required: true
+    annotations:
+      title: Get Edge Job
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createEdgeJob
+    description: >-
+      Create a new edge job. Edge jobs allow running scripts on edge environments
+      on a scheduled basis.
+    parameters:
+      - name: name
+        description: The name of the edge job
+        type: string
+        required: true
+      - name: cronExpression
+        description: "The cron expression defining the schedule. Example: '0 0 * * *' for daily at midnight."
+        type: string
+        required: true
+      - name: recurring
+        description: Whether the job should run repeatedly on schedule (true) or only once (false).
+        type: boolean
+        required: true
+      - name: scriptContent
+        description: The shell script content to execute on the edge environments.
+        type: string
+        required: true
+      - name: edgeGroupIds
+        description: "The IDs of the edge groups (environment groups) to run the job on. Example: [1, 2, 3]"
+        type: array
+        required: true
+        items:
+          type: number
+    annotations:
+      title: Create Edge Job
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: deleteEdgeJob
+    description: Delete an edge job.
+    parameters:
+      - name: id
+        description: The ID of the edge job to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Edge Job
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Custom Templates
+  ## ------------------------------------------------------------
+  - name: listCustomTemplates
+    description: List all custom templates.
+    annotations:
+      title: List Custom Templates
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createCustomTemplate
+    description: >-
+      Create a new custom template. Custom templates allow you to save Docker Compose
+      or Kubernetes manifest templates for reuse.
+    parameters:
+      - name: title
+        description: The title of the custom template
+        type: string
+        required: true
+      - name: description
+        description: A description of the custom template
+        type: string
+        required: true
+      - name: fileContent
+        description: The content of the template file (Docker Compose YAML or Kubernetes manifest)
+        type: string
+        required: true
+      - name: type
+        description: "The type of template. Valid values: 1 (Swarm stack), 2 (Compose stack), 3 (Kubernetes)"
+        type: number
+        required: true
+      - name: platform
+        description: "The platform for the template. Valid values: 1 (Linux), 2 (Windows)"
+        type: number
+        required: true
+    annotations:
+      title: Create Custom Template
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: deleteCustomTemplate
+    description: Delete a custom template.
+    parameters:
+      - name: id
+        description: The ID of the custom template to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Custom Template
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Webhooks
+  ## ------------------------------------------------------------
+  - name: listWebhooks
+    description: List all webhooks configured in Portainer.
+    annotations:
+      title: List Webhooks
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createWebhook
+    description: >-
+      Create a new webhook. Webhooks allow triggering actions on Portainer resources
+      via HTTP requests.
+    parameters:
+      - name: resourceId
+        description: The ID of the resource (e.g., service ID) to associate with the webhook
+        type: string
+        required: true
+      - name: endpointId
+        description: The ID of the environment the resource belongs to
+        type: number
+        required: true
+      - name: webhookType
+        description: "The type of webhook. Valid values: 1 (Service webhook)"
+        type: number
+        required: true
+    annotations:
+      title: Create Webhook
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: deleteWebhook
+    description: Delete a webhook.
+    parameters:
+      - name: id
+        description: The ID of the webhook to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Webhook
+      readOnlyHint: false
+      destructiveHint: true
       idempotentHint: true
       openWorldHint: false
 

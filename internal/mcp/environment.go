@@ -16,6 +16,7 @@ func (s *PortainerMCPServer) AddEnvironmentFeatures() {
 		s.addToolIfExists(ToolUpdateEnvironmentTags, s.HandleUpdateEnvironmentTags())
 		s.addToolIfExists(ToolUpdateEnvironmentUserAccesses, s.HandleUpdateEnvironmentUserAccesses())
 		s.addToolIfExists(ToolUpdateEnvironmentTeamAccesses, s.HandleUpdateEnvironmentTeamAccesses())
+		s.addToolIfExists(ToolUpdateEnvironment, s.HandleUpdateEnvironment())
 	}
 }
 
@@ -111,5 +112,38 @@ func (s *PortainerMCPServer) HandleUpdateEnvironmentTeamAccesses() server.ToolHa
 		}
 
 		return mcp.NewToolResultText("Environment team accesses updated successfully"), nil
+	}
+}
+
+func (s *PortainerMCPServer) HandleUpdateEnvironment() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		id, err := parser.GetInt("id", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid id parameter", err), nil
+		}
+
+		name, err := parser.GetString("name", false)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid name parameter", err), nil
+		}
+
+		publicURL, err := parser.GetString("publicURL", false)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid publicURL parameter", err), nil
+		}
+
+		groupID, err := parser.GetInt("groupID", false)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid groupID parameter", err), nil
+		}
+
+		err = s.cli.UpdateEnvironment(id, name, publicURL, groupID)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to update environment", err), nil
+		}
+
+		return mcp.NewToolResultText("Environment updated successfully"), nil
 	}
 }

@@ -20,6 +20,7 @@ func (s *PortainerMCPServer) AddAccessGroupFeatures() {
 		s.addToolIfExists(ToolUpdateAccessGroupTeamAccesses, s.HandleUpdateAccessGroupTeamAccesses())
 		s.addToolIfExists(ToolAddEnvironmentToAccessGroup, s.HandleAddEnvironmentToAccessGroup())
 		s.addToolIfExists(ToolRemoveEnvironmentFromAccessGroup, s.HandleRemoveEnvironmentFromAccessGroup())
+		s.addToolIfExists(ToolDeleteAccessGroup, s.HandleDeleteAccessGroup())
 	}
 }
 
@@ -184,5 +185,23 @@ func (s *PortainerMCPServer) HandleRemoveEnvironmentFromAccessGroup() server.Too
 		}
 
 		return mcp.NewToolResultText("Environment removed from access group successfully"), nil
+	}
+}
+
+func (s *PortainerMCPServer) HandleDeleteAccessGroup() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		id, err := parser.GetInt("id", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid id parameter", err), nil
+		}
+
+		err = s.cli.DeleteAccessGroup(id)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to delete access group", err), nil
+		}
+
+		return mcp.NewToolResultText("Access group deleted successfully"), nil
 	}
 }

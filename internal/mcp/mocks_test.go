@@ -59,6 +59,11 @@ func (m *MockPortainerClient) CreateEnvironmentTag(name string) (int, error) {
 	return args.Int(0), args.Error(1)
 }
 
+func (m *MockPortainerClient) DeleteTag(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
 // Environment methods
 
 func (m *MockPortainerClient) GetEnvironments() ([]models.Environment, error) {
@@ -81,6 +86,11 @@ func (m *MockPortainerClient) UpdateEnvironmentUserAccesses(id int, userAccesses
 
 func (m *MockPortainerClient) UpdateEnvironmentTeamAccesses(id int, teamAccesses map[int]string) error {
 	args := m.Called(id, teamAccesses)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) UpdateEnvironment(id int, name, publicURL string, groupID int) error {
+	args := m.Called(id, name, publicURL, groupID)
 	return args.Error(0)
 }
 
@@ -111,6 +121,11 @@ func (m *MockPortainerClient) UpdateEnvironmentGroupEnvironments(id int, environ
 
 func (m *MockPortainerClient) UpdateEnvironmentGroupTags(id int, tagIds []int) error {
 	args := m.Called(id, tagIds)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteEnvironmentGroup(id int) error {
+	args := m.Called(id)
 	return args.Error(0)
 }
 
@@ -154,6 +169,11 @@ func (m *MockPortainerClient) RemoveEnvironmentFromAccessGroup(id int, environme
 	return args.Error(0)
 }
 
+func (m *MockPortainerClient) DeleteAccessGroup(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
 // Stack methods
 
 func (m *MockPortainerClient) GetStacks() ([]models.Stack, error) {
@@ -176,6 +196,51 @@ func (m *MockPortainerClient) CreateStack(name string, file string, environmentG
 
 func (m *MockPortainerClient) UpdateStack(id int, file string, environmentGroupIds []int) error {
 	args := m.Called(id, file, environmentGroupIds)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteEdgeStack(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Docker Stack methods
+
+func (m *MockPortainerClient) GetDockerStacks() ([]models.DockerStack, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.DockerStack), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetDockerStackFile(id int) (string, error) {
+	args := m.Called(id)
+	return args.String(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateDockerStack(endpointID int, name, composeFileContent string, env []models.StackEnvVar) (int, error) {
+	args := m.Called(endpointID, name, composeFileContent, env)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) UpdateDockerStack(id, endpointID int, composeFileContent string, env []models.StackEnvVar, prune, pullImage bool) error {
+	args := m.Called(id, endpointID, composeFileContent, env, prune, pullImage)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteDockerStack(id, endpointID int) error {
+	args := m.Called(id, endpointID)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) StartDockerStack(id, endpointID int) error {
+	args := m.Called(id, endpointID)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) StopDockerStack(id, endpointID int) error {
+	args := m.Called(id, endpointID)
 	return args.Error(0)
 }
 
@@ -204,6 +269,11 @@ func (m *MockPortainerClient) UpdateTeamMembers(id int, userIds []int) error {
 	return args.Error(0)
 }
 
+func (m *MockPortainerClient) DeleteTeam(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
 // User methods
 
 func (m *MockPortainerClient) GetUsers() ([]models.User, error) {
@@ -229,12 +299,105 @@ func (m *MockPortainerClient) GetSettings() (models.PortainerSettings, error) {
 	return args.Get(0).(models.PortainerSettings), args.Error(1)
 }
 
+func (m *MockPortainerClient) UpdateSettings(settingsJSON string) error {
+	args := m.Called(settingsJSON)
+	return args.Error(0)
+}
+
 func (m *MockPortainerClient) GetVersion() (string, error) {
 	args := m.Called()
 	if args.Get(0) == nil {
 		return "", args.Error(1)
 	}
 	return args.Get(0).(string), args.Error(1)
+}
+
+// Registry methods
+
+func (m *MockPortainerClient) GetRegistries() ([]models.Registry, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.Registry), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateRegistry(req models.RegistryCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteRegistry(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Edge Job methods
+
+func (m *MockPortainerClient) GetEdgeJobs() ([]models.EdgeJob, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.EdgeJob), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetEdgeJob(id int) (models.EdgeJob, error) {
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.EdgeJob{}, args.Error(1)
+	}
+	return args.Get(0).(models.EdgeJob), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateEdgeJob(req models.EdgeJobCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteEdgeJob(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Custom Template methods
+
+func (m *MockPortainerClient) GetCustomTemplates() ([]models.CustomTemplate, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.CustomTemplate), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateCustomTemplate(req models.CustomTemplateCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteCustomTemplate(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Webhook methods
+
+func (m *MockPortainerClient) GetWebhooks() ([]models.Webhook, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.Webhook), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateWebhook(req models.WebhookCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteWebhook(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
 }
 
 // Docker Proxy methods

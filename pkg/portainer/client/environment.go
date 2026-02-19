@@ -1,7 +1,10 @@
 package client
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/portainer/portainer-mcp/pkg/portainer/models"
 	"github.com/portainer/portainer-mcp/pkg/portainer/utils"
@@ -100,5 +103,39 @@ func (c *PortainerClient) UpdateEnvironmentTeamAccesses(id int, teamAccesses map
 	if err != nil {
 		return fmt.Errorf("failed to update environment team accesses: %w", err)
 	}
+	return nil
+}
+
+// UpdateEnvironment updates an environment's name, public URL, and/or group ID.
+//
+// Parameters:
+//   - id: The ID of the environment to update
+//   - name: The new name (empty string to skip)
+//   - publicURL: The new public URL (empty string to skip)
+//   - groupID: The new group ID (0 to skip)
+//
+// Returns:
+//   - An error if the operation fails
+func (c *PortainerClient) UpdateEnvironment(id int, name, publicURL string, groupID int) error {
+	payload := map[string]any{}
+	if name != "" {
+		payload["name"] = name
+	}
+	if publicURL != "" {
+		payload["publicURL"] = publicURL
+	}
+	if groupID > 0 {
+		payload["groupID"] = groupID
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal update request: %w", err)
+	}
+
+	if err := c.doJSONAPIRequest(http.MethodPut, fmt.Sprintf("/endpoints/%d", id), bytes.NewReader(body), nil); err != nil {
+		return fmt.Errorf("failed to update environment: %w", err)
+	}
+
 	return nil
 }

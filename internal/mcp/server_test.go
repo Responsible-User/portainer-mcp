@@ -31,7 +31,7 @@ func TestNewPortainerMCPServer(t *testing.T) {
 			token:     "valid-token",
 			toolsPath: validToolsPath,
 			mockSetup: func(m *MockPortainerClient) {
-				m.On("GetVersion").Return(SupportedPortainerVersion, nil)
+				m.On("GetVersion").Return("2.33.0", nil)
 			},
 			expectError: false,
 		},
