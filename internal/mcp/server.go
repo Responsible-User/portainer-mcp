@@ -20,7 +20,7 @@ const (
 	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
 	MinSupportedPortainerVersion = "2.27.0"
 	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
-	MaxSupportedPortainerVersion = "2.37"
+	MaxSupportedPortainerVersion = "2.38"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
@@ -135,6 +135,10 @@ type PortainerClient interface {
 	CreatePolicy(req models.PolicyCreateRequest) (int, error)
 	UpdatePolicy(id int, req models.PolicyUpdateRequest) error
 	DeletePolicy(id int) error
+	GetPolicyTemplates(category, policyType string) ([]models.PolicyTemplate, error)
+	GetPolicyTemplate(id string) (models.PolicyTemplate, error)
+	GetPolicyMetadata() (models.PolicyMetadata, error)
+	GetPolicyConflicts(req models.PolicyConflictsRequest) (models.PolicyConflictsResponse, error)
 
 	// Kubernetes Custom Resource methods
 	ListCustomResourceDefinitions(environmentID int) ([]models.CustomResourceDefinition, error)

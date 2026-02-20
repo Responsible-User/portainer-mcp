@@ -537,6 +537,38 @@ func (m *MockPortainerClient) DeletePolicy(id int) error {
 	return args.Error(0)
 }
 
+func (m *MockPortainerClient) GetPolicyTemplates(category, policyType string) ([]models.PolicyTemplate, error) {
+	args := m.Called(category, policyType)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.PolicyTemplate), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetPolicyTemplate(id string) (models.PolicyTemplate, error) {
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.PolicyTemplate{}, args.Error(1)
+	}
+	return args.Get(0).(models.PolicyTemplate), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetPolicyMetadata() (models.PolicyMetadata, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return models.PolicyMetadata{}, args.Error(1)
+	}
+	return args.Get(0).(models.PolicyMetadata), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetPolicyConflicts(req models.PolicyConflictsRequest) (models.PolicyConflictsResponse, error) {
+	args := m.Called(req)
+	if args.Get(0) == nil {
+		return models.PolicyConflictsResponse{}, args.Error(1)
+	}
+	return args.Get(0).(models.PolicyConflictsResponse), args.Error(1)
+}
+
 // Kubernetes Custom Resource methods
 
 func (m *MockPortainerClient) ListCustomResourceDefinitions(environmentID int) ([]models.CustomResourceDefinition, error) {

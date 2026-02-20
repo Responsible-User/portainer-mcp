@@ -1,5 +1,5 @@
 ---
-version: v1.6
+version: v1.7
 tools:
   ## Access Groups
   ## An access group is the equivalent of an Endpoint Group in Portainer.
@@ -1074,7 +1074,7 @@ tools:
 
   ## Fleetwide Policies
   ## Centralized policies that apply configuration, security rules, and cluster settings
-  ## across groups of environments. Experimental feature. Business Edition only.
+  ## across groups of environments. Business Edition only.
   ## ------------------------------------------------------------
   - name: listPolicies
     description: >-
@@ -1214,6 +1214,117 @@ tools:
       title: Delete Policy
       readOnlyHint: false
       destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+  - name: listPolicyTemplates
+    description: >-
+      List available policy templates. Templates provide preconfigured policies
+      that can be applied in a few clicks. Can be filtered by category and/or type.
+      Categories: rbac, security, setup, registry.
+      Types: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+      rbac-docker, security-docker, setup-docker, registry-docker.
+    parameters:
+      - name: category
+        description: >-
+          Filter templates by category. Valid values: rbac, security, setup, registry
+        type: string
+        enum:
+          - rbac
+          - security
+          - setup
+          - registry
+      - name: type
+        description: >-
+          Filter templates by policy type. Valid values: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+          rbac-docker, security-docker, setup-docker, registry-docker
+        type: string
+        enum:
+          - rbac-k8s
+          - security-k8s
+          - setup-k8s
+          - registry-k8s
+          - rbac-docker
+          - security-docker
+          - setup-docker
+          - registry-docker
+    annotations:
+      title: List Policy Templates
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getPolicyTemplate
+    description: Get details of a specific policy template by ID, including its preconfigured data.
+    parameters:
+      - name: id
+        description: The string ID of the policy template to retrieve
+        type: string
+        required: true
+    annotations:
+      title: Get Policy Template
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getPolicyMetadata
+    description: >-
+      Get policy metadata including minimum agent versions required for each policy type.
+      Returns a map of policy types to their minimum required agent versions.
+    annotations:
+      title: Get Policy Metadata
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getPolicyConflicts
+    description: >-
+      Preview policy conflicts for a proposed policy configuration. Returns information about
+      conflicts with existing policies, new groups, and supported/unsupported environment counts.
+      Use this before creating a policy to check for potential issues.
+    parameters:
+      - name: name
+        description: The name of the proposed policy
+        type: string
+        required: true
+      - name: type
+        description: >-
+          The policy type. Valid values: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+          rbac-docker, security-docker, setup-docker, registry-docker
+        type: string
+        required: true
+        enum:
+          - rbac-k8s
+          - security-k8s
+          - setup-k8s
+          - registry-k8s
+          - rbac-docker
+          - security-docker
+          - setup-docker
+          - registry-docker
+      - name: environmentType
+        description: >-
+          The environment type this policy applies to. Valid values: kubernetes, docker, podman, swarm
+        type: string
+        required: true
+        enum:
+          - kubernetes
+          - docker
+          - podman
+          - swarm
+      - name: environmentGroups
+        description: "The IDs of the environment groups to check for conflicts. Example: [1, 2, 3]"
+        type: array
+        items:
+          type: number
+      - name: dataJSON
+        description: >-
+          A JSON string containing the policy-specific configuration data.
+          The structure depends on the policy type.
+        type: string
+    annotations:
+      title: Get Policy Conflicts
+      readOnlyHint: true
+      destructiveHint: false
       idempotentHint: true
       openWorldHint: false
 

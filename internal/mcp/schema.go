@@ -106,11 +106,15 @@ const (
 	ToolDeleteAlertSilence  = "deleteAlertSilence"
 
 	// Policies
-	ToolListPolicies = "listPolicies"
-	ToolGetPolicy    = "getPolicy"
-	ToolCreatePolicy = "createPolicy"
-	ToolUpdatePolicy = "updatePolicy"
-	ToolDeletePolicy = "deletePolicy"
+	ToolListPolicies        = "listPolicies"
+	ToolGetPolicy           = "getPolicy"
+	ToolCreatePolicy        = "createPolicy"
+	ToolUpdatePolicy        = "updatePolicy"
+	ToolDeletePolicy        = "deletePolicy"
+	ToolListPolicyTemplates = "listPolicyTemplates"
+	ToolGetPolicyTemplate   = "getPolicyTemplate"
+	ToolGetPolicyMetadata   = "getPolicyMetadata"
+	ToolGetPolicyConflicts  = "getPolicyConflicts"
 
 	// Kubernetes Custom Resources
 	ToolListCustomResourceDefinitions  = "listCustomResourceDefinitions"
