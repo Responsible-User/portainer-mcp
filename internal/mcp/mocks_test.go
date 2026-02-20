@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/portainer/portainer-mcp/pkg/portainer/models"
@@ -396,6 +397,93 @@ func (m *MockPortainerClient) CreateWebhook(req models.WebhookCreateRequest) (in
 }
 
 func (m *MockPortainerClient) DeleteWebhook(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Git Credential methods
+
+func (m *MockPortainerClient) GetGitCredentials() ([]models.GitCredential, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.GitCredential), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetGitCredential(id int) (models.GitCredential, error) {
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.GitCredential{}, args.Error(1)
+	}
+	return args.Get(0).(models.GitCredential), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateGitCredential(req models.GitCredentialCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) UpdateGitCredential(id int, req models.GitCredentialUpdateRequest) error {
+	args := m.Called(id, req)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteGitCredential(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Alerting methods
+
+func (m *MockPortainerClient) GetAlerts(status string) (json.RawMessage, error) {
+	args := m.Called(status)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(json.RawMessage), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetAlertRules() ([]models.AlertingRule, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.AlertingRule), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetAlertRule(id int) (models.AlertingRule, error) {
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.AlertingRule{}, args.Error(1)
+	}
+	return args.Get(0).(models.AlertingRule), args.Error(1)
+}
+
+func (m *MockPortainerClient) UpdateAlertRule(id int, ruleJSON string) error {
+	args := m.Called(id, ruleJSON)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteAlertRule(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) GetAlertingSettings() ([]models.AlertingSettings, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.AlertingSettings), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreateAlertSilence(silenceJSON string, alertManagerURL string) error {
+	args := m.Called(silenceJSON, alertManagerURL)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeleteAlertSilence(id string) error {
 	args := m.Called(id)
 	return args.Error(0)
 }

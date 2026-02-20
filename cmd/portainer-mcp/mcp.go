@@ -78,6 +78,8 @@ func main() {
 	server.AddEdgeJobFeatures()
 	server.AddCustomTemplateFeatures()
 	server.AddWebhookFeatures()
+	server.AddGitCredentialFeatures()
+	server.AddAlertingFeatures()
 	server.AddDockerProxyFeatures()
 	server.AddKubernetesProxyFeatures()
 

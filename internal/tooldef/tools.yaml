@@ -1,5 +1,5 @@
 ---
-version: v1.3
+version: v1.4
 tools:
   ## Access Groups
   ## An access group is the equivalent of an Endpoint Group in Portainer.
@@ -1211,5 +1211,232 @@ tools:
       title: Get Kubernetes Resource (Stripped)
       readOnlyHint: true
       destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Git Credentials (Shared)
+  ## Shared git credentials are admin-level credentials used for Git repository authentication
+  ## across stacks, custom templates, and other resources.
+  ## ------------------------------------------------------------
+  - name: listGitCredentials
+    description: List all shared git credentials configured in Portainer. These are admin-level credentials usable across stacks and deployments.
+    annotations:
+      title: List Git Credentials
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getGitCredential
+    description: Get a specific shared git credential by ID.
+    parameters:
+      - name: id
+        description: The ID of the git credential to retrieve
+        type: number
+        required: true
+    annotations:
+      title: Get Git Credential
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createGitCredential
+    description: >-
+      Create a new shared git credential. Shared git credentials can be used across
+      stacks and other resources for Git repository authentication.
+    parameters:
+      - name: name
+        description: A descriptive name for the git credential
+        type: string
+        required: true
+      - name: username
+        description: The username for git authentication
+        type: string
+        required: true
+      - name: password
+        description: The password or personal access token for git authentication
+        type: string
+        required: true
+      - name: authorizationType
+        description: "The authorization type. Valid values: 0 (Basic authentication), 1 (Token-based authentication)"
+        type: number
+        required: true
+        enum:
+          - 0
+          - 1
+    annotations:
+      title: Create Git Credential
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: updateGitCredential
+    description: Update an existing shared git credential.
+    parameters:
+      - name: id
+        description: The ID of the git credential to update
+        type: number
+        required: true
+      - name: name
+        description: The name of the git credential
+        type: string
+        required: true
+      - name: username
+        description: The username for git authentication
+        type: string
+        required: true
+      - name: password
+        description: The password or personal access token for git authentication. Leave empty to keep the existing value.
+        type: string
+      - name: authorizationType
+        description: "The authorization type. Valid values: 0 (Basic authentication), 1 (Token-based authentication)"
+        type: number
+        required: true
+        enum:
+          - 0
+          - 1
+    annotations:
+      title: Update Git Credential
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteGitCredential
+    description: Delete a shared git credential.
+    parameters:
+      - name: id
+        description: The ID of the git credential to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Git Credential
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Observability / Alerting
+  ## Portainer observability alerting features for monitoring environments.
+  ## Business Edition only.
+  ## ------------------------------------------------------------
+  - name: listAlerts
+    description: >-
+      List alerts from the Portainer observability alerting system.
+      Can filter by status (active or silenced). Requires the Observability feature to be enabled.
+    parameters:
+      - name: status
+        description: "Filter alerts by status. Valid values: active, silenced. If not provided, returns all alerts."
+        type: string
+        enum:
+          - active
+          - silenced
+    annotations:
+      title: List Alerts
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: listAlertRules
+    description: List all alert rules configured in the Portainer observability alerting system.
+    annotations:
+      title: List Alert Rules
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getAlertRule
+    description: Get a specific alert rule by ID.
+    parameters:
+      - name: id
+        description: The ID of the alert rule to retrieve
+        type: number
+        required: true
+    annotations:
+      title: Get Alert Rule
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: updateAlertRule
+    description: >-
+      Update an existing alert rule. Pass a JSON string containing the rule fields to update.
+      The JSON is wrapped in the API payload format automatically.
+      Available fields include: name, description, severity, conditionOperator, threshold, duration,
+      enabled, metricType, alertManagerID.
+    parameters:
+      - name: id
+        description: The ID of the alert rule to update
+        type: number
+        required: true
+      - name: ruleJSON
+        description: >-
+          A JSON string containing the alert rule fields to update.
+          Example: {"name": "High CPU Usage", "enabled": true, "threshold": 90, "severity": "critical",
+          "conditionOperator": ">", "duration": 300}
+        type: string
+        required: true
+    annotations:
+      title: Update Alert Rule
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteAlertRule
+    description: Delete an alert rule.
+    parameters:
+      - name: id
+        description: The ID of the alert rule to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Alert Rule
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+  - name: getAlertingSettings
+    description: >-
+      Get the alerting settings, including alert manager instances and their
+      notification channels configuration.
+    annotations:
+      title: Get Alerting Settings
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createAlertSilence
+    description: >-
+      Create a new alert silence. Silences suppress matching alerts for a specified time period.
+      Pass a JSON string containing the silence definition.
+    parameters:
+      - name: silenceJSON
+        description: >-
+          A JSON string containing the silence definition.
+          Required fields: comment (string), createdBy (string), startsAt (ISO 8601 datetime),
+          endsAt (ISO 8601 datetime), matchers (array of {name, value, isRegex, isEqual}).
+          Example: {"comment": "Maintenance window", "createdBy": "admin",
+          "startsAt": "2025-01-01T00:00:00Z", "endsAt": "2025-01-01T06:00:00Z",
+          "matchers": [{"name": "alertname", "value": "HighCPU", "isRegex": false, "isEqual": true}]}
+        type: string
+        required: true
+      - name: alertManagerURL
+        description: The URL of the alert manager instance. If not provided, the internal alert manager is used.
+        type: string
+    annotations:
+      title: Create Alert Silence
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: deleteAlertSilence
+    description: Delete an alert silence, allowing the silenced alerts to fire again.
+    parameters:
+      - name: id
+        description: The ID of the alert silence to delete (string identifier)
+        type: string
+        required: true
+    annotations:
+      title: Delete Alert Silence
+      readOnlyHint: false
+      destructiveHint: true
       idempotentHint: true
       openWorldHint: false

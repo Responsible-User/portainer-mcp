@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,7 +20,7 @@ const (
 	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
 	MinSupportedPortainerVersion = "2.27.0"
 	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
-	MaxSupportedPortainerVersion = "2.33"
+	MaxSupportedPortainerVersion = "2.34"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
@@ -108,6 +109,23 @@ type PortainerClient interface {
 	GetWebhooks() ([]models.Webhook, error)
 	CreateWebhook(req models.WebhookCreateRequest) (int, error)
 	DeleteWebhook(id int) error
+
+	// Git Credential methods
+	GetGitCredentials() ([]models.GitCredential, error)
+	GetGitCredential(id int) (models.GitCredential, error)
+	CreateGitCredential(req models.GitCredentialCreateRequest) (int, error)
+	UpdateGitCredential(id int, req models.GitCredentialUpdateRequest) error
+	DeleteGitCredential(id int) error
+
+	// Alerting methods
+	GetAlerts(status string) (json.RawMessage, error)
+	GetAlertRules() ([]models.AlertingRule, error)
+	GetAlertRule(id int) (models.AlertingRule, error)
+	UpdateAlertRule(id int, ruleJSON string) error
+	DeleteAlertRule(id int) error
+	GetAlertingSettings() ([]models.AlertingSettings, error)
+	CreateAlertSilence(silenceJSON string, alertManagerURL string) error
+	DeleteAlertSilence(id string) error
 
 	// Docker Proxy methods
 	ProxyDockerRequest(opts models.DockerProxyRequestOptions) (*http.Response, error)

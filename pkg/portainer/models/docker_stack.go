@@ -2,18 +2,18 @@ package models
 
 // DockerStack represents a Docker standalone stack in Portainer.
 type DockerStack struct {
-	ID            int               `json:"id"`
-	Name          string            `json:"name"`
-	Type          int               `json:"type"`
-	Status        int               `json:"status"`
-	EndpointID    int               `json:"endpoint_id"`
-	EntryPoint    string            `json:"entry_point"`
-	Env           []StackEnvVar     `json:"env,omitempty"`
-	CreatedBy     string            `json:"created_by"`
-	CreationDate  int64             `json:"creation_date"`
-	UpdateDate    int64             `json:"update_date,omitempty"`
-	UpdatedBy     string            `json:"updated_by,omitempty"`
-	IsComposeFormat bool            `json:"is_compose_format"`
+	ID              int           `json:"id"`
+	Name            string        `json:"name"`
+	Type            int           `json:"type"`
+	Status          int           `json:"status"`
+	EndpointID      int           `json:"endpoint_id"`
+	EntryPoint      string        `json:"entry_point"`
+	Env             []StackEnvVar `json:"env,omitempty"`
+	CreatedBy       string        `json:"created_by"`
+	CreationDate    int64         `json:"creation_date"`
+	UpdateDate      int64         `json:"update_date,omitempty"`
+	UpdatedBy       string        `json:"updated_by,omitempty"`
+	IsComposeFormat bool          `json:"is_compose_format"`
 }
 
 // StackEnvVar represents an environment variable in a stack.

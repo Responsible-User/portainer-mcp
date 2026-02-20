@@ -5,21 +5,21 @@ import "slices"
 // Tool names as defined in the YAML file
 const (
 	// Access Groups
-	ToolCreateAccessGroup                  = "createAccessGroup"
-	ToolListAccessGroups                   = "listAccessGroups"
-	ToolUpdateAccessGroupName              = "updateAccessGroupName"
-	ToolUpdateAccessGroupUserAccesses      = "updateAccessGroupUserAccesses"
-	ToolUpdateAccessGroupTeamAccesses      = "updateAccessGroupTeamAccesses"
-	ToolAddEnvironmentToAccessGroup        = "addEnvironmentToAccessGroup"
-	ToolRemoveEnvironmentFromAccessGroup   = "removeEnvironmentFromAccessGroup"
-	ToolDeleteAccessGroup                  = "deleteAccessGroup"
+	ToolCreateAccessGroup                = "createAccessGroup"
+	ToolListAccessGroups                 = "listAccessGroups"
+	ToolUpdateAccessGroupName            = "updateAccessGroupName"
+	ToolUpdateAccessGroupUserAccesses    = "updateAccessGroupUserAccesses"
+	ToolUpdateAccessGroupTeamAccesses    = "updateAccessGroupTeamAccesses"
+	ToolAddEnvironmentToAccessGroup      = "addEnvironmentToAccessGroup"
+	ToolRemoveEnvironmentFromAccessGroup = "removeEnvironmentFromAccessGroup"
+	ToolDeleteAccessGroup                = "deleteAccessGroup"
 
 	// Environments
-	ToolListEnvironments                   = "listEnvironments"
-	ToolUpdateEnvironment                  = "updateEnvironment"
-	ToolUpdateEnvironmentTags              = "updateEnvironmentTags"
-	ToolUpdateEnvironmentUserAccesses      = "updateEnvironmentUserAccesses"
-	ToolUpdateEnvironmentTeamAccesses      = "updateEnvironmentTeamAccesses"
+	ToolListEnvironments              = "listEnvironments"
+	ToolUpdateEnvironment             = "updateEnvironment"
+	ToolUpdateEnvironmentTags         = "updateEnvironmentTags"
+	ToolUpdateEnvironmentUserAccesses = "updateEnvironmentUserAccesses"
+	ToolUpdateEnvironmentTeamAccesses = "updateEnvironmentTeamAccesses"
 
 	// Environment Groups (Edge Groups)
 	ToolCreateEnvironmentGroup             = "createEnvironmentGroup"
@@ -30,68 +30,85 @@ const (
 	ToolDeleteEnvironmentGroup             = "deleteEnvironmentGroup"
 
 	// Edge Stacks
-	ToolListStacks                         = "listStacks"
-	ToolGetStackFile                       = "getStackFile"
-	ToolCreateStack                        = "createStack"
-	ToolUpdateStack                        = "updateStack"
-	ToolDeleteStack                        = "deleteStack"
+	ToolListStacks   = "listStacks"
+	ToolGetStackFile = "getStackFile"
+	ToolCreateStack  = "createStack"
+	ToolUpdateStack  = "updateStack"
+	ToolDeleteStack  = "deleteStack"
 
 	// Docker Stacks
-	ToolListDockerStacks                   = "listDockerStacks"
-	ToolGetDockerStackFile                 = "getDockerStackFile"
-	ToolCreateDockerStack                  = "createDockerStack"
-	ToolUpdateDockerStack                  = "updateDockerStack"
-	ToolDeleteDockerStack                  = "deleteDockerStack"
-	ToolStartDockerStack                   = "startDockerStack"
-	ToolStopDockerStack                    = "stopDockerStack"
+	ToolListDockerStacks   = "listDockerStacks"
+	ToolGetDockerStackFile = "getDockerStackFile"
+	ToolCreateDockerStack  = "createDockerStack"
+	ToolUpdateDockerStack  = "updateDockerStack"
+	ToolDeleteDockerStack  = "deleteDockerStack"
+	ToolStartDockerStack   = "startDockerStack"
+	ToolStopDockerStack    = "stopDockerStack"
 
 	// Tags
-	ToolCreateEnvironmentTag               = "createEnvironmentTag"
-	ToolListEnvironmentTags                = "listEnvironmentTags"
-	ToolDeleteTag                          = "deleteTag"
+	ToolCreateEnvironmentTag = "createEnvironmentTag"
+	ToolListEnvironmentTags  = "listEnvironmentTags"
+	ToolDeleteTag            = "deleteTag"
 
 	// Teams
-	ToolCreateTeam                         = "createTeam"
-	ToolListTeams                          = "listTeams"
-	ToolUpdateTeamName                     = "updateTeamName"
-	ToolUpdateTeamMembers                  = "updateTeamMembers"
-	ToolDeleteTeam                         = "deleteTeam"
+	ToolCreateTeam        = "createTeam"
+	ToolListTeams         = "listTeams"
+	ToolUpdateTeamName    = "updateTeamName"
+	ToolUpdateTeamMembers = "updateTeamMembers"
+	ToolDeleteTeam        = "deleteTeam"
 
 	// Users
-	ToolListUsers                          = "listUsers"
-	ToolUpdateUserRole                     = "updateUserRole"
+	ToolListUsers      = "listUsers"
+	ToolUpdateUserRole = "updateUserRole"
 
 	// Settings
-	ToolGetSettings                        = "getSettings"
-	ToolUpdateSettings                     = "updateSettings"
+	ToolGetSettings    = "getSettings"
+	ToolUpdateSettings = "updateSettings"
 
 	// Registries
-	ToolListRegistries                     = "listRegistries"
-	ToolCreateRegistry                     = "createRegistry"
-	ToolDeleteRegistry                     = "deleteRegistry"
+	ToolListRegistries = "listRegistries"
+	ToolCreateRegistry = "createRegistry"
+	ToolDeleteRegistry = "deleteRegistry"
 
 	// Edge Jobs
-	ToolListEdgeJobs                       = "listEdgeJobs"
-	ToolGetEdgeJob                         = "getEdgeJob"
-	ToolCreateEdgeJob                      = "createEdgeJob"
-	ToolDeleteEdgeJob                      = "deleteEdgeJob"
+	ToolListEdgeJobs  = "listEdgeJobs"
+	ToolGetEdgeJob    = "getEdgeJob"
+	ToolCreateEdgeJob = "createEdgeJob"
+	ToolDeleteEdgeJob = "deleteEdgeJob"
 
 	// Custom Templates
-	ToolListCustomTemplates                = "listCustomTemplates"
-	ToolCreateCustomTemplate               = "createCustomTemplate"
-	ToolDeleteCustomTemplate               = "deleteCustomTemplate"
+	ToolListCustomTemplates  = "listCustomTemplates"
+	ToolCreateCustomTemplate = "createCustomTemplate"
+	ToolDeleteCustomTemplate = "deleteCustomTemplate"
 
 	// Webhooks
-	ToolListWebhooks                       = "listWebhooks"
-	ToolCreateWebhook                      = "createWebhook"
-	ToolDeleteWebhook                      = "deleteWebhook"
+	ToolListWebhooks  = "listWebhooks"
+	ToolCreateWebhook = "createWebhook"
+	ToolDeleteWebhook = "deleteWebhook"
+
+	// Git Credentials
+	ToolListGitCredentials  = "listGitCredentials"
+	ToolGetGitCredential    = "getGitCredential"
+	ToolCreateGitCredential = "createGitCredential"
+	ToolUpdateGitCredential = "updateGitCredential"
+	ToolDeleteGitCredential = "deleteGitCredential"
+
+	// Alerting
+	ToolListAlerts          = "listAlerts"
+	ToolListAlertRules      = "listAlertRules"
+	ToolGetAlertRule        = "getAlertRule"
+	ToolUpdateAlertRule     = "updateAlertRule"
+	ToolDeleteAlertRule     = "deleteAlertRule"
+	ToolGetAlertingSettings = "getAlertingSettings"
+	ToolCreateAlertSilence  = "createAlertSilence"
+	ToolDeleteAlertSilence  = "deleteAlertSilence"
 
 	// Docker Proxy
-	ToolDockerProxy                        = "dockerProxy"
+	ToolDockerProxy = "dockerProxy"
 
 	// Kubernetes Proxy
-	ToolKubernetesProxy                    = "kubernetesProxy"
-	ToolKubernetesProxyStripped            = "getKubernetesResourceStripped"
+	ToolKubernetesProxy         = "kubernetesProxy"
+	ToolKubernetesProxyStripped = "getKubernetesResourceStripped"
 )
 
 // Access levels for users and teams
