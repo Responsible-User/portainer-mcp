@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/portainer/client-api-go/v2/client"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
@@ -74,7 +75,7 @@ func WithSkipTLSVerify(skip bool) ClientOption {
 // server URL and authentication token.
 //
 // Parameters:
-//   - serverURL: The base URL of the Portainer server
+//   - serverURL: The base URL of the Portainer server (e.g., "https://portainer.example.com:9443")
 //   - token: The authentication token for API access
 //   - opts: Optional configuration options for the client
 //
@@ -89,8 +90,21 @@ func NewPortainerClient(serverURL string, token string, opts ...ClientOption) *P
 		opt(&options)
 	}
 
+	// The SDK client expects host:port only (not a full URL) and takes the
+	// scheme separately. Parse the serverURL to extract these components so
+	// the SDK doesn't double-prefix the scheme.
+	sdkOpts := []client.ClientOption{client.WithSkipTLSVerify(options.skipTLSVerify)}
+	sdkHost := serverURL
+
+	if u, err := url.Parse(serverURL); err == nil && u.Host != "" {
+		sdkHost = u.Host
+		if u.Scheme != "" {
+			sdkOpts = append(sdkOpts, client.WithScheme(u.Scheme))
+		}
+	}
+
 	return &PortainerClient{
-		cli:       client.NewPortainerClient(serverURL, token, client.WithSkipTLSVerify(options.skipTLSVerify)),
+		cli:       client.NewPortainerClient(sdkHost, token, sdkOpts...),
 		serverURL: serverURL,
 		token:     token,
 		httpCli: &http.Client{
