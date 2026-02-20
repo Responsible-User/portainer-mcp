@@ -1,84 +1,44 @@
-# Portainer MCP
-[![Go Report Card](https://goreportcard.com/badge/github.com/portainer/portainer-mcp)](https://goreportcard.com/report/github.com/portainer/portainer-mcp)
-![coverage](https://raw.githubusercontent.com/portainer/portainer-mcp/badges/.badges/main/coverage.svg)
+# Portainer MCP (Extended Fork)
 
-Ever wished you could just ask Portainer what's going on?
-
-Now you can! Portainer MCP connects your AI assistant directly to your Portainer environments. Manage Portainer resources such as users and environments, or dive deeper by executing any Docker or Kubernetes command directly through the AI.
-
-![portainer-mcp-demo](https://downloads.portainer.io/mcp-demo5.gif)
+> **This is an extended fork of the [original Portainer MCP server](https://github.com/portainer/portainer-mcp).** The upstream project supported Portainer up to version 2.31.2 with a limited set of tools. This fork significantly extends support through **Portainer 2.38** and adds **50+ new MCP tools** covering git credentials, alerting/observability, fleetwide policies, policy templates, Kubernetes custom resources, registry connectivity testing, and more.
 
 ## Overview
 
-Portainer MCP is a work in progress implementation of the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) for Portainer environments. This project aims to provide a standardized way to connect Portainer's container management capabilities with AI models and other services.
+Portainer MCP connects your AI assistant directly to your Portainer environments via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction). Manage Portainer resources such as users, environments, stacks, registries, and policies — or dive deeper by executing any Docker or Kubernetes command directly through the AI.
 
-MCP (Model Context Protocol) is an open protocol that standardizes how applications provide context to LLMs (Large Language Models). Similar to how USB-C provides a standardized way to connect devices to peripherals, MCP provides a standardized way to connect AI models to different data sources and tools.
-
-This implementation focuses on exposing Portainer environment data through the MCP protocol, allowing AI assistants and other tools to interact with your containerized infrastructure in a secure and standardized way.
+MCP is an open protocol that standardizes how applications provide context to LLMs. This implementation exposes Portainer's container management capabilities through MCP, allowing AI assistants to interact with your containerized infrastructure in a secure and standardized way.
 
 > [!NOTE]
-> This tool is designed to work with specific Portainer versions. If your Portainer version doesn't match the supported version, you can use the `--disable-version-check` flag to attempt connection anyway. See [Portainer Version Support](#portainer-version-support) for compatible versions and [Disable Version Check](#disable-version-check) for bypass instructions.
-
-See the [Supported Capabilities](#supported-capabilities) sections for more details on compatibility and available features.
-
-*Note: This project is currently under development.*
+> This tool is designed to work with Portainer versions **2.27.0 through 2.38.x**. If your Portainer version is outside this range, you can use the `--disable-version-check` flag to attempt connection anyway. See [Portainer Version Support](#portainer-version-support) for details.
 
 It is currently designed to work with a Portainer administrator API token.
 
 ## Installation
 
-You can download pre-built binaries for Linux (amd64, arm64) and macOS (arm64) from the [**Latest Release Page**](https://github.com/portainer/portainer-mcp/releases/latest). Find the appropriate archive for your operating system and architecture under the "Assets" section.
-
-**Download the archive:**
-You can usually download this directly from the release page. Alternatively, you can use `curl`. Here's an example for macOS (ARM64) version `v0.2.0`:
+You can download pre-built binaries for Linux (amd64, arm64) and macOS (arm64) from the [**Latest Release Page**](https://github.com/portainer/portainer-mcp/releases/latest), or build from source:
 
 ```bash
-# Example for macOS (ARM64) - adjust version and architecture as needed
-curl -Lo portainer-mcp-v0.2.0-darwin-arm64.tar.gz https://github.com/portainer/portainer-mcp/releases/download/v0.2.0/portainer-mcp-v0.2.0-darwin-arm64.tar.gz
+git clone https://github.com/portainer/portainer-mcp.git
+cd portainer-mcp
+make build
 ```
 
-(Linux AMD64 binaries are also available on the release page.)
+The binary will be in `dist/portainer-mcp`.
 
-**(Optional but recommended) Verify the checksum:**
-First, download the corresponding `.md5` checksum file from the release page.
-Example for macOS (ARM64) `v0.2.0`:
+## Usage
 
-```bash
-# Download the checksum file (adjust version/arch)
-curl -Lo portainer-mcp-v0.2.0-darwin-arm64.tar.gz.md5 https://github.com/portainer/portainer-mcp/releases/download/v0.2.0/portainer-mcp-v0.2.0-darwin-arm64.tar.gz.md5
-# Now verify (output should match the content of the .md5 file)
-if [ "$(md5 -q portainer-mcp-v0.2.0-darwin-arm64.tar.gz)" = "$(cat portainer-mcp-v0.2.0-darwin-arm64.tar.gz.md5)" ]; then echo "OK"; else echo "FAILED"; fi
-```
+Configure your MCP client (e.g. Claude Desktop, Claude Code, Cursor) like so:
 
-(For Linux, you can use `md5sum -c <checksum_file_name>.md5`)
-If the verification command outputs "OK", the file is intact.
-
-**Extract the archive:**
-
-```bash
-# Adjust the filename based on the downloaded version/OS/architecture
-tar -xzf portainer-mcp-v0.2.0-darwin-arm64.tar.gz
-```
-
-This will extract the `portainer-mcp` executable.
-
-**Move the executable:**
-Move the executable to a location in your `$PATH` (e.g., `/usr/local/bin`) or note its location for the configuration step below.
-
-# Usage
-
-With Claude Desktop, configure it like so:
-
-```
+```json
 {
     "mcpServers": {
         "portainer": {
             "command": "/path/to/portainer-mcp",
             "args": [
                 "-server",
-                "[IP]:[PORT]",
+                "https://your-portainer:9443",
                 "-token",
-                "[TOKEN]",
+                "your-api-token",
                 "-tools",
                 "/tmp/tools.yaml"
             ]
@@ -87,92 +47,31 @@ With Claude Desktop, configure it like so:
 }
 ```
 
-Replace `[IP]`, `[PORT]` and `[TOKEN]` with the IP, port and API access token associated with your Portainer instance.
-
 > [!NOTE]
-> By default, the tool looks for "tools.yaml" in the same directory as the binary. If the file does not exist, it will be created there with the default tool definitions. You may need to modify this path as described above, particularly when using AI assistants like Claude that have restricted write permissions to the working directory.
+> By default, the tool looks for `tools.yaml` in the same directory as the binary. If the file does not exist, it will be created with the default tool definitions. You may need to specify a custom path with `-tools` when using AI assistants that have restricted write permissions to the working directory.
 
-## Disable Version Check
+### Command Line Flags
 
-By default, the application validates that your Portainer server version matches the supported version and will fail to start if there's a mismatch. If you have a Portainer server version that doesn't have a corresponding Portainer MCP version available, you can disable this version check to attempt connection anyway.
-
-To disable the version check, add the `-disable-version-check` flag to your command arguments:
-
-```
-{
-    "mcpServers": {
-        "portainer": {
-            "command": "/path/to/portainer-mcp",
-            "args": [
-                "-server",
-                "[IP]:[PORT]",
-                "-token",
-                "[TOKEN]",
-                "-disable-version-check"
-            ]
-        }
-    }
-}
-```
-
-> [!WARNING]
-> Disabling the version check may result in unexpected behavior or API incompatibilities if your Portainer server version differs significantly from the supported version. The tool may work partially or not at all with unsupported versions.
-
-When using this flag:
-- The application will skip Portainer server version validation at startup
-- Some features may not work correctly due to API differences between versions
-- Newer Portainer versions may have API changes that cause errors
-- Older Portainer versions may be missing APIs that the tool expects
-
-This flag is useful when:
-- You're running a newer Portainer version that doesn't have MCP support yet
-- You're running an older Portainer version and want to try the tool anyway
-
-## Tool Customization
-
-By default, the tool definitions are embedded in the binary. The application will create a tools file at the default location if one doesn't already exist.
-
-You can customize the tool definitions by specifying a custom tools file path using the `-tools` flag:
-
-```
-{
-    "mcpServers": {
-        "portainer": {
-            "command": "/path/to/portainer-mcp",
-            "args": [
-                "-server",
-                "[IP]:[PORT]",
-                "-token",
-                "[TOKEN]",
-                "-tools",
-                "/path/to/custom/tools.yaml"
-            ]
-        }
-    }
-}
-```
-
-The default tools file is available for reference at `internal/tooldef/tools.yaml` in the source code. You can modify the descriptions of the tools and their parameters to alter how AI models interpret and decide to use them. You can even decide to remove some tools if you don't wish to use them.
-
-> [!WARNING]
-> Do not change the tool names or parameter definitions (other than descriptions), as this will prevent the tools from being properly registered and functioning correctly.
+| Flag | Required | Description |
+|------|----------|-------------|
+| `-server` | Yes | The Portainer server URL (e.g. `https://portainer.example.com:9443`) |
+| `-token` | Yes | API access token for the Portainer server |
+| `-tools` | No | Path to a custom tools.yaml file |
+| `-read-only` | No | Run in read-only mode (only list/get tools available) |
+| `-disable-version-check` | No | Skip Portainer server version validation at startup |
 
 ## Read-Only Mode
 
-For security-conscious users, the application can be run in read-only mode. This mode ensures that only read operations are available, completely preventing any modifications to your Portainer resources.
+For security-conscious users, the application can be run in read-only mode. This ensures only read operations are available, completely preventing any modifications to your Portainer resources.
 
-To enable read-only mode, add the `-read-only` flag to your command arguments:
-
-```
+```json
 {
     "mcpServers": {
         "portainer": {
             "command": "/path/to/portainer-mcp",
             "args": [
-                "-server",
-                "[IP]:[PORT]",
-                "-token",
-                "[TOKEN]",
+                "-server", "https://your-portainer:9443",
+                "-token", "your-api-token",
                 "-read-only"
             ]
         }
@@ -183,115 +82,224 @@ To enable read-only mode, add the `-read-only` flag to your command arguments:
 When using read-only mode:
 - Only read tools (list, get) will be available to the AI model
 - All write tools (create, update, delete) are not loaded
-- The Docker proxy requests tool is not loaded
-- The Kubernetes proxy requests tool is not loaded
+- The Docker and Kubernetes proxy request tools are not loaded
 
-# Portainer Version Support
+## Disable Version Check
 
-This tool is pinned to support a specific version of Portainer. The application will validate the Portainer server version at startup and fail if it doesn't match the required version.
+By default, the application validates that your Portainer server version falls within the supported range and will fail to start if there's a mismatch. You can disable this:
 
-| Portainer MCP Version  | Supported Portainer Version |
-|--------------|----------------------------|
-| 0.1.0 | 2.28.1 |
-| 0.2.0 | 2.28.1 |
-| 0.3.0 | 2.28.1 |
-| 0.4.0 | 2.29.2 |
-| 0.4.1 | 2.29.2 |
-| 0.5.0 | 2.30.0 |
-| 0.6.0 | 2.31.2 |
-
-> [!NOTE]
-> If you need to connect to an unsupported Portainer version, you can use the `-disable-version-check` flag to bypass version validation. See the [Disable Version Check](#disable-version-check) section for more details and important warnings about using this feature.
-
-# Supported Capabilities
-
-The following table lists the currently (latest version) supported operations through MCP tools:
-
-| Resource | Operation | Description | Supported In Version |
-|----------|-----------|-------------|----------------------|
-| **Environments** | | | |
-| | ListEnvironments | List all available environments | 0.1.0 |
-| | UpdateEnvironmentTags | Update tags associated with an environment | 0.1.0 |
-| | UpdateEnvironmentUserAccesses | Update user access policies for an environment | 0.1.0 |
-| | UpdateEnvironmentTeamAccesses | Update team access policies for an environment | 0.1.0 |
-| **Environment Groups (Edge Groups)** | | | |
-| | ListEnvironmentGroups | List all available environment groups | 0.1.0 |
-| | CreateEnvironmentGroup | Create a new environment group | 0.1.0 |
-| | UpdateEnvironmentGroupName | Update the name of an environment group | 0.1.0 |
-| | UpdateEnvironmentGroupEnvironments | Update environments associated with a group | 0.1.0 |
-| | UpdateEnvironmentGroupTags | Update tags associated with a group | 0.1.0 |
-| **Access Groups (Endpoint Groups)** | | | |
-| | ListAccessGroups | List all available access groups | 0.1.0 |
-| | CreateAccessGroup | Create a new access group | 0.1.0 |
-| | UpdateAccessGroupName | Update the name of an access group | 0.1.0 |
-| | UpdateAccessGroupUserAccesses | Update user accesses for an access group | 0.1.0 |
-| | UpdateAccessGroupTeamAccesses | Update team accesses for an access group | 0.1.0 |
-| | AddEnvironmentToAccessGroup | Add an environment to an access group | 0.1.0 |
-| | RemoveEnvironmentFromAccessGroup | Remove an environment from an access group | 0.1.0 |
-| **Stacks (Edge Stacks)** | | | |
-| | ListStacks | List all available stacks | 0.1.0 |
-| | GetStackFile | Get the compose file for a specific stack | 0.1.0 |
-| | CreateStack | Create a new Docker stack | 0.1.0 |
-| | UpdateStack | Update an existing Docker stack | 0.1.0 |
-| **Tags** | | | |
-| | ListEnvironmentTags | List all available environment tags | 0.1.0 |
-| | CreateEnvironmentTag | Create a new environment tag | 0.1.0 |
-| **Teams** | | | |
-| | ListTeams | List all available teams | 0.1.0 |
-| | CreateTeam | Create a new team | 0.1.0 |
-| | UpdateTeamName | Update the name of a team | 0.1.0 |
-| | UpdateTeamMembers | Update the members of a team | 0.1.0 |
-| **Users** | | | |
-| | ListUsers | List all available users | 0.1.0 |
-| | UpdateUser | Update an existing user | 0.1.0 |
-| | GetSettings | Get the settings of the Portainer instance | 0.1.0 |
-| **Docker** | | | |
-| | DockerProxy | Proxy ANY Docker API requests | 0.2.0 |
-| **Kubernetes** | | | |
-| | KubernetesProxy | Proxy ANY Kubernetes API requests | 0.3.0 |
-| | getKubernetesResourceStripped | Proxy GET Kubernetes API requests and automatically strip verbose metadata fields | 0.6.0 |
-
-# Development
-
-## Code Statistics
-
-The repository includes a helper script `cloc.sh` to calculate lines of code and other metrics for the Go source files using the `cloc` tool. You might need to install `cloc` first (e.g., `sudo apt install cloc` or `brew install cloc`).
-
-Run the script from the repository root to see the default summary output:
-
-```bash
-./cloc.sh
+```json
+{
+    "mcpServers": {
+        "portainer": {
+            "command": "/path/to/portainer-mcp",
+            "args": [
+                "-server", "https://your-portainer:9443",
+                "-token", "your-api-token",
+                "-disable-version-check"
+            ]
+        }
+    }
+}
 ```
 
-Refer to the comment header within the `cloc.sh` script for details on available flags to retrieve specific metrics.
+> [!WARNING]
+> Disabling the version check may result in unexpected behavior or API incompatibilities. Some features may not work correctly with unsupported versions.
 
-## Token Counting
+## Tool Customization
 
-To get an estimate of how many tokens your current tool definitions consume in prompts, you can use the provided Go program and shell script to query the Anthropic API's token counting endpoint.
+The tool definitions are embedded in the binary by default. You can customize them by specifying a custom tools file:
 
-**1. Generate the Tools JSON:**
+```json
+"args": ["-server", "...", "-token", "...", "-tools", "/path/to/custom/tools.yaml"]
+```
 
-First, use the `token-count` Go program to convert your YAML tool definitions into the JSON format required by the Anthropic API. Run this from the repository root:
+The default tools file is available at `internal/tooldef/tools.yaml` in the source code. You can modify tool descriptions and parameter descriptions to alter how AI models interpret and use them, or remove tools you don't need.
+
+> [!WARNING]
+> Do not change tool names or parameter definitions (other than descriptions), as this will prevent the tools from functioning correctly.
+
+## Portainer Version Support
+
+This fork supports Portainer versions **2.27.0 through 2.38.x**. The version is validated at startup (can be bypassed with `-disable-version-check`).
+
+### Version History
+
+| Fork Version | Portainer Support | New Tools Added |
+|-------------|-------------------|-----------------|
+| 1.0.0 | 2.27.0 - 2.38.x | All tools below |
+
+#### Upstream (original portainer-mcp)
+
+| Upstream Version | Portainer Version | Notes |
+|-----------------|-------------------|-------|
+| 0.1.0 | 2.28.1 | Initial release |
+| 0.2.0 | 2.28.1 | Docker proxy |
+| 0.3.0 | 2.28.1 | Kubernetes proxy |
+| 0.4.0 | 2.29.2 | — |
+| 0.4.1 | 2.29.2 | — |
+| 0.5.0 | 2.30.0 | — |
+| 0.6.0 | 2.31.2 | Last upstream release |
+
+### What This Fork Adds Beyond Upstream
+
+| Portainer Version | Features Added |
+|-------------------|----------------|
+| 2.33 (LTS) | Docker stacks, settings management, registries, edge jobs, custom templates, webhooks, environment updates, access groups, delete operations |
+| 2.34 | Shared git credentials (CRUD), alerting/observability (rules, silences, settings) |
+| 2.35 | Version bump only (no new API endpoints) |
+| 2.36 | Kubernetes custom resources (CRDs), registry connection testing |
+| 2.37 | Fleetwide policies (CRUD), agent version listing |
+| 2.38 | Policy templates, policy metadata, policy conflict detection |
+
+## Supported Capabilities
+
+The following table lists all supported operations (80+ MCP tools):
+
+| Resource | Operation | Description |
+|----------|-----------|-------------|
+| **Environments** | | |
+| | listEnvironments | List all available environments |
+| | updateEnvironment | Update environment name, public URL, or group |
+| | updateEnvironmentTags | Update tags associated with an environment |
+| | updateEnvironmentUserAccesses | Update user access policies for an environment |
+| | updateEnvironmentTeamAccesses | Update team access policies for an environment |
+| | listAgentVersions | List available agent versions |
+| **Environment Groups** | | |
+| | listEnvironmentGroups | List all environment groups (edge groups) |
+| | createEnvironmentGroup | Create a new environment group |
+| | updateEnvironmentGroupName | Update environment group name |
+| | updateEnvironmentGroupEnvironments | Update environments in a group |
+| | updateEnvironmentGroupTags | Update tags on a group |
+| | deleteEnvironmentGroup | Delete an environment group |
+| **Access Groups** | | |
+| | listAccessGroups | List all access groups (endpoint groups) |
+| | createAccessGroup | Create a new access group |
+| | updateAccessGroupName | Update access group name |
+| | updateAccessGroupUserAccesses | Update user accesses for an access group |
+| | updateAccessGroupTeamAccesses | Update team accesses for an access group |
+| | addEnvironmentToAccessGroup | Add an environment to an access group |
+| | removeEnvironmentFromAccessGroup | Remove an environment from an access group |
+| | deleteAccessGroup | Delete an access group |
+| **Edge Stacks** | | |
+| | listStacks | List all edge stacks |
+| | getStackFile | Get the compose file for an edge stack |
+| | createStack | Create a new edge stack |
+| | updateStack | Update an existing edge stack |
+| | deleteStack | Delete an edge stack |
+| **Docker Stacks** | | |
+| | listDockerStacks | List all Docker stacks |
+| | getDockerStackFile | Get the compose file for a Docker stack |
+| | createDockerStack | Create a new Docker stack |
+| | updateDockerStack | Update an existing Docker stack |
+| | deleteDockerStack | Delete a Docker stack |
+| | startDockerStack | Start a stopped Docker stack |
+| | stopDockerStack | Stop a running Docker stack |
+| **Tags** | | |
+| | listEnvironmentTags | List all environment tags |
+| | createEnvironmentTag | Create a new environment tag |
+| | deleteTag | Delete a tag |
+| **Teams** | | |
+| | listTeams | List all teams |
+| | createTeam | Create a new team |
+| | updateTeamName | Update team name |
+| | updateTeamMembers | Update team members |
+| | deleteTeam | Delete a team |
+| **Users** | | |
+| | listUsers | List all users |
+| | updateUserRole | Update a user's role |
+| **Settings** | | |
+| | getSettings | Get Portainer instance settings |
+| | updateSettings | Update Portainer instance settings |
+| **Registries** | | |
+| | listRegistries | List all registries |
+| | createRegistry | Create a new registry |
+| | deleteRegistry | Delete a registry |
+| | testRegistryConnection | Test connectivity to a registry |
+| **Edge Jobs** | | |
+| | listEdgeJobs | List all edge jobs |
+| | getEdgeJob | Get details of a specific edge job |
+| | createEdgeJob | Create a new edge job |
+| | deleteEdgeJob | Delete an edge job |
+| **Custom Templates** | | |
+| | listCustomTemplates | List all custom templates |
+| | createCustomTemplate | Create a new custom template |
+| | deleteCustomTemplate | Delete a custom template |
+| **Webhooks** | | |
+| | listWebhooks | List all webhooks |
+| | createWebhook | Create a new webhook |
+| | deleteWebhook | Delete a webhook |
+| **Git Credentials** | | |
+| | listGitCredentials | List all shared git credentials |
+| | getGitCredential | Get details of a specific git credential |
+| | createGitCredential | Create a new git credential |
+| | updateGitCredential | Update an existing git credential |
+| | deleteGitCredential | Delete a git credential |
+| **Alerting** | | |
+| | listAlerts | List active or silenced alerts |
+| | listAlertRules | List all alert rules |
+| | getAlertRule | Get details of a specific alert rule |
+| | updateAlertRule | Update an alert rule |
+| | deleteAlertRule | Delete an alert rule |
+| | getAlertingSettings | Get alerting configuration settings |
+| | createAlertSilence | Create a new alert silence |
+| | deleteAlertSilence | Delete an alert silence |
+| **Fleetwide Policies** | | |
+| | listPolicies | List all fleetwide policies |
+| | getPolicy | Get details of a specific policy |
+| | createPolicy | Create a new fleetwide policy |
+| | updatePolicy | Update an existing policy |
+| | deletePolicy | Delete a policy |
+| | listPolicyTemplates | List available policy templates |
+| | getPolicyTemplate | Get details of a specific policy template |
+| | getPolicyMetadata | Get policy metadata (minimum agent versions) |
+| | getPolicyConflicts | Preview conflicts for a proposed policy |
+| **Kubernetes Custom Resources** | | |
+| | listCustomResourceDefinitions | List all CRDs in a Kubernetes environment |
+| | getCustomResourceDefinition | Get details of a specific CRD |
+| | deleteCustomResourceDefinition | Delete a CRD |
+| | listCustomResources | List custom resource instances |
+| | getCustomResource | Get a specific custom resource (JSON/YAML) |
+| | deleteCustomResource | Delete a custom resource |
+| **Docker Proxy** | | |
+| | dockerProxy | Proxy any Docker API request |
+| **Kubernetes Proxy** | | |
+| | kubernetesProxy | Proxy any Kubernetes API request |
+| | getKubernetesResourceStripped | Proxy GET Kubernetes requests with verbose metadata stripped |
+
+## Development
+
+### Building
 
 ```bash
-# Replace internal/tooldef/tools.yaml with your YAML file if different
-# Replace .tmp/tools.json with your desired output path
+make build                          # Build for current platform
+make PLATFORM=darwin ARCH=arm64 build  # Cross-compile
+```
+
+### Testing
+
+```bash
+make test           # Unit tests
+make test-integration  # Integration tests (requires Docker)
+make test-all       # All tests
+```
+
+### Other Commands
+
+```bash
+go vet ./...    # Lint
+gofmt -s -w .   # Format
+make inspector  # MCP Inspector
+```
+
+### Token Counting
+
+To estimate how many tokens your tool definitions consume:
+
+```bash
+# Generate tools JSON
 go run ./cmd/token-count -input internal/tooldef/tools.yaml -output .tmp/tools.json
-```
 
-This command reads the tool definitions from the specified input YAML file and writes a JSON array of tools (containing `name`, `description`, and `input_schema`) to the specified output file.
-
-**2. Query the Anthropic API:**
-
-Next, use the `token.sh` script to send these tool definitions along with a sample message to the Anthropic API. You will need an Anthropic API key for this step.
-
-```bash
-# Ensure you have jq installed
-# Replace sk-ant-xxxxxxxx with your actual Anthropic API key
-# Replace .tmp/tools.json with the path to the file generated in step 1
+# Query Anthropic API (requires API key and jq)
 ./token.sh -k sk-ant-xxxxxxxx -i .tmp/tools.json
 ```
-
-The script will output the JSON response from the Anthropic API, which includes the estimated token count for the provided tools and sample message under the `usage.input_tokens` field.
-
-This process helps in understanding the token cost associated with the toolset provided to the language model.
