@@ -80,6 +80,7 @@ func main() {
 	server.AddWebhookFeatures()
 	server.AddGitCredentialFeatures()
 	server.AddAlertingFeatures()
+	server.AddCustomResourceFeatures()
 	server.AddDockerProxyFeatures()
 	server.AddKubernetesProxyFeatures()
 

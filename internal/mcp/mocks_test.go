@@ -333,6 +333,14 @@ func (m *MockPortainerClient) DeleteRegistry(id int) error {
 	return args.Error(0)
 }
 
+func (m *MockPortainerClient) PingRegistry(req models.RegistryPingRequest) (models.RegistryPingResponse, error) {
+	args := m.Called(req)
+	if args.Get(0) == nil {
+		return models.RegistryPingResponse{}, args.Error(1)
+	}
+	return args.Get(0).(models.RegistryPingResponse), args.Error(1)
+}
+
 // Edge Job methods
 
 func (m *MockPortainerClient) GetEdgeJobs() ([]models.EdgeJob, error) {
@@ -485,6 +493,50 @@ func (m *MockPortainerClient) CreateAlertSilence(silenceJSON string, alertManage
 
 func (m *MockPortainerClient) DeleteAlertSilence(id string) error {
 	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Kubernetes Custom Resource methods
+
+func (m *MockPortainerClient) ListCustomResourceDefinitions(environmentID int) ([]models.CustomResourceDefinition, error) {
+	args := m.Called(environmentID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.CustomResourceDefinition), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetCustomResourceDefinition(environmentID int, name string) (models.CustomResourceDefinition, error) {
+	args := m.Called(environmentID, name)
+	if args.Get(0) == nil {
+		return models.CustomResourceDefinition{}, args.Error(1)
+	}
+	return args.Get(0).(models.CustomResourceDefinition), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteCustomResourceDefinition(environmentID int, name string) error {
+	args := m.Called(environmentID, name)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) ListCustomResources(environmentID int, definition string) ([]models.CustomResource, error) {
+	args := m.Called(environmentID, definition)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.CustomResource), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetCustomResource(environmentID int, namespace, name, definition, format string) (json.RawMessage, error) {
+	args := m.Called(environmentID, namespace, name, definition, format)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(json.RawMessage), args.Error(1)
+}
+
+func (m *MockPortainerClient) DeleteCustomResource(environmentID int, namespace, name, definition string) error {
+	args := m.Called(environmentID, namespace, name, definition)
 	return args.Error(0)
 }
 

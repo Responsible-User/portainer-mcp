@@ -61,3 +61,25 @@ func (c *PortainerClient) DeleteRegistry(id int) error {
 
 	return nil
 }
+
+// PingRegistry tests a registry connection.
+//
+// Parameters:
+//   - req: The registry ping request containing connection details
+//
+// Returns:
+//   - The ping response indicating success or failure
+//   - An error if the operation fails
+func (c *PortainerClient) PingRegistry(req models.RegistryPingRequest) (models.RegistryPingResponse, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return models.RegistryPingResponse{}, fmt.Errorf("failed to marshal ping request: %w", err)
+	}
+
+	var result models.RegistryPingResponse
+	if err := c.doJSONAPIRequest(http.MethodPost, "/registries/ping", bytes.NewReader(body), &result); err != nil {
+		return models.RegistryPingResponse{}, fmt.Errorf("failed to ping registry: %w", err)
+	}
+
+	return result, nil
+}

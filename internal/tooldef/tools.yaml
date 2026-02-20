@@ -1,5 +1,5 @@
 ---
-version: v1.4
+version: v1.5
 tools:
   ## Access Groups
   ## An access group is the equivalent of an Endpoint Group in Portainer.
@@ -1029,6 +1029,168 @@ tools:
         required: true
     annotations:
       title: Delete Webhook
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+
+  ## Registries (continued)
+  ## ------------------------------------------------------------
+  - name: testRegistryConnection
+    description: >-
+      Test a registry connection by pinging the registry URL.
+      Useful for validating registry connectivity and credentials before creating a registry.
+      Registry types: 1 = Quay.io, 2 = Azure Container Registry, 3 = Custom Registry,
+      4 = GitLab, 5 = ProGet, 6 = DockerHub, 7 = Amazon ECR, 8 = GitHub Container Registry.
+    parameters:
+      - name: url
+        description: The URL of the registry to test (e.g., https://registry.example.com)
+        type: string
+        required: true
+      - name: type
+        description: "The type of registry. Valid values: 1 (Quay.io), 2 (Azure), 3 (Custom), 4 (GitLab), 5 (ProGet), 6 (DockerHub), 7 (ECR), 8 (GitHub)"
+        type: number
+        required: true
+      - name: username
+        description: The username for registry authentication. Required for authenticated registries.
+        type: string
+      - name: password
+        description: The password for registry authentication. Required for authenticated registries.
+        type: string
+    annotations:
+      title: Test Registry Connection
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+
+  ## Kubernetes Custom Resources
+  ## Custom Resource Definitions (CRDs) and their custom resource instances
+  ## in Kubernetes environments. Business Edition only.
+  ## ------------------------------------------------------------
+  - name: listCustomResourceDefinitions
+    description: >-
+      List all Custom Resource Definitions (CRDs) in a Kubernetes environment.
+      Returns CRD names, groups, scopes, and associated Helm release information.
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+    annotations:
+      title: List Custom Resource Definitions
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getCustomResourceDefinition
+    description: >-
+      Get details of a specific Custom Resource Definition (CRD) by name.
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+      - name: name
+        description: "The fully qualified name of the CRD (e.g., certificates.cert-manager.io)"
+        type: string
+        required: true
+    annotations:
+      title: Get Custom Resource Definition
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteCustomResourceDefinition
+    description: >-
+      Delete a Custom Resource Definition (CRD) from a Kubernetes environment.
+      Warning: this will also delete all custom resources of this type.
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+      - name: name
+        description: "The fully qualified name of the CRD to delete (e.g., certificates.cert-manager.io)"
+        type: string
+        required: true
+    annotations:
+      title: Delete Custom Resource Definition
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
+  - name: listCustomResources
+    description: >-
+      List all custom resource instances for a given Custom Resource Definition.
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+      - name: definition
+        description: "The CRD definition name to list resources for (e.g., certificates.cert-manager.io)"
+        type: string
+        required: true
+    annotations:
+      title: List Custom Resources
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getCustomResource
+    description: >-
+      Get a specific custom resource instance. Supports both namespaced and cluster-scoped
+      resources. Use the format parameter to get YAML output (equivalent to kubectl describe).
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+      - name: name
+        description: The name of the custom resource
+        type: string
+        required: true
+      - name: definition
+        description: "The CRD definition name (e.g., certificates.cert-manager.io)"
+        type: string
+        required: true
+      - name: namespace
+        description: The namespace of the resource. Omit for cluster-scoped resources.
+        type: string
+      - name: format
+        description: "Response format. Use 'yaml' for full YAML output. Omit for JSON summary."
+        type: string
+        enum:
+          - yaml
+    annotations:
+      title: Get Custom Resource
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deleteCustomResource
+    description: >-
+      Delete a specific custom resource instance. Supports both namespaced and
+      cluster-scoped resources.
+    parameters:
+      - name: environmentId
+        description: The ID of the Kubernetes environment
+        type: number
+        required: true
+      - name: name
+        description: The name of the custom resource to delete
+        type: string
+        required: true
+      - name: definition
+        description: "The CRD definition name (e.g., certificates.cert-manager.io)"
+        type: string
+        required: true
+      - name: namespace
+        description: The namespace of the resource. Omit for cluster-scoped resources.
+        type: string
+    annotations:
+      title: Delete Custom Resource
       readOnlyHint: false
       destructiveHint: true
       idempotentHint: true

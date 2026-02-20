@@ -20,7 +20,7 @@ const (
 	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
 	MinSupportedPortainerVersion = "2.27.0"
 	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
-	MaxSupportedPortainerVersion = "2.35"
+	MaxSupportedPortainerVersion = "2.36"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
@@ -93,6 +93,7 @@ type PortainerClient interface {
 	GetRegistries() ([]models.Registry, error)
 	CreateRegistry(req models.RegistryCreateRequest) (int, error)
 	DeleteRegistry(id int) error
+	PingRegistry(req models.RegistryPingRequest) (models.RegistryPingResponse, error)
 
 	// Edge Job methods
 	GetEdgeJobs() ([]models.EdgeJob, error)
@@ -126,6 +127,14 @@ type PortainerClient interface {
 	GetAlertingSettings() ([]models.AlertingSettings, error)
 	CreateAlertSilence(silenceJSON string, alertManagerURL string) error
 	DeleteAlertSilence(id string) error
+
+	// Kubernetes Custom Resource methods
+	ListCustomResourceDefinitions(environmentID int) ([]models.CustomResourceDefinition, error)
+	GetCustomResourceDefinition(environmentID int, name string) (models.CustomResourceDefinition, error)
+	DeleteCustomResourceDefinition(environmentID int, name string) error
+	ListCustomResources(environmentID int, definition string) ([]models.CustomResource, error)
+	GetCustomResource(environmentID int, namespace, name, definition, format string) (json.RawMessage, error)
+	DeleteCustomResource(environmentID int, namespace, name, definition string) error
 
 	// Docker Proxy methods
 	ProxyDockerRequest(opts models.DockerProxyRequestOptions) (*http.Response, error)

@@ -11,12 +11,14 @@ The `client-api-go` dependency has no v2.33 release (latest is v2.31.2). Since t
 ## Phase 1: Version Compatibility
 
 ### 1a. Relax version check in `internal/mcp/server.go`
+
 - Change `SupportedPortainerVersion` from exact `"2.31.2"` to a minimum like `"2.27.0"` (or the oldest supported)
 - Change the version comparison from `!=` (exact match) to semver `<` (minimum version check) using `golang.org/x/mod/semver`
 - Add a `MaxSupportedPortainerVersion = "2.33"` constant for documentation clarity
 - This allows the MCP server to work with Portainer 2.31.x through 2.33.x
 
 ### 1b. Add generic Portainer API client
+
 - Add a `PortainerAPIRequest` method to the wrapper client in `pkg/portainer/client/` that makes raw HTTP requests to `https://{host}/api/{path}` with the API key header
 - This reuses the same pattern as the existing `ProxyClient` in `client-api-go` but targets Portainer API endpoints (not Docker/K8s proxied endpoints)
 - Add a `PortainerAPIRequest` method to the `PortainerAPIClient` interface
@@ -26,7 +28,8 @@ The `client-api-go` dependency has no v2.33 release (latest is v2.31.2). Since t
 
 Currently only Edge Stacks are supported. Docker standalone stacks are a major use case.
 
-### New tools:
+### New tools
+
 - `listDockerStacks` — `GET /api/stacks` (filtered to non-edge stacks)
 - `getDockerStackFile` — `GET /api/stacks/{id}/file`
 - `createDockerStack` — `POST /api/stacks/create/standalone/string` (from compose string)
@@ -35,7 +38,8 @@ Currently only Edge Stacks are supported. Docker standalone stacks are a major u
 - `startDockerStack` — `POST /api/stacks/{id}/start`
 - `stopDockerStack` — `POST /api/stacks/{id}/stop`
 
-### Files to modify/create:
+### Files to modify/create
+
 - `internal/tooldef/tools.yaml` — add 7 tool definitions
 - `internal/mcp/schema.go` — add 7 tool name constants
 - `internal/mcp/docker_stack.go` (new) — handler file with `AddDockerStackFeatures()` + 7 handlers
@@ -47,12 +51,14 @@ Currently only Edge Stacks are supported. Docker standalone stacks are a major u
 
 ## Phase 3: Container Registries
 
-### New tools:
+### New tools
+
 - `listRegistries` — `GET /api/registries`
 - `createRegistry` — `POST /api/registries`
 - `deleteRegistry` — `DELETE /api/registries/{id}`
 
-### Files to modify/create:
+### Files to modify/createnow go thr
+
 - `internal/tooldef/tools.yaml` — add 3 tool definitions
 - `internal/mcp/schema.go` — add 3 tool name constants
 - `internal/mcp/registry.go` (new) — handler file with `AddRegistryFeatures()`
@@ -65,12 +71,14 @@ Currently only Edge Stacks are supported. Docker standalone stacks are a major u
 ## Phase 4: Edge Jobs
 
 ### New tools:
+
 - `listEdgeJobs` — `GET /api/edge_jobs`
 - `createEdgeJob` — `POST /api/edge_jobs`
 - `deleteEdgeJob` — `DELETE /api/edge_jobs/{id}`
 - `getEdgeJobResults` — `GET /api/edge_jobs/{id}`
 
 ### Files:
+
 - Same pattern: tools.yaml + schema.go + `internal/mcp/edge_job.go` + `pkg/portainer/client/edge_job.go` + `pkg/portainer/models/edge_job.go` + tests + registration
 
 ## Phase 5: Delete Operations for Existing Resources
@@ -78,6 +86,7 @@ Currently only Edge Stacks are supported. Docker standalone stacks are a major u
 Add delete capabilities to currently supported resource types:
 
 ### New tools:
+
 - `deleteAccessGroup` — `DELETE /api/endpoint_groups/{id}`
 - `deleteEnvironmentGroup` — `DELETE /api/edge_groups/{id}`
 - `deleteStack` (edge stack) — `DELETE /api/edge_stacks/{id}`
@@ -85,6 +94,7 @@ Add delete capabilities to currently supported resource types:
 - `deleteTeam` — `DELETE /api/teams/{id}`
 
 ### Files:
+
 - `internal/tooldef/tools.yaml` — add 5 tool definitions
 - `internal/mcp/schema.go` — add 5 tool name constants
 - Add handlers to existing files (`access_group.go`, `group.go`, `stack.go`, `tag.go`, `team.go`)
@@ -94,10 +104,12 @@ Add delete capabilities to currently supported resource types:
 
 ## Phase 6: Settings Update
 
-### New tools:
+### New tools:\]
+
 - `updateSettings` — `PUT /api/settings`
 
 ### Files:
+
 - `internal/tooldef/tools.yaml` — add tool definition
 - `internal/mcp/schema.go` — add constant
 - Extend `internal/mcp/settings.go` handler
@@ -107,29 +119,35 @@ Add delete capabilities to currently supported resource types:
 ## Phase 7: Custom Templates
 
 ### New tools:
+
 - `listCustomTemplates` — `GET /api/custom_templates`
 - `createCustomTemplate` — `POST /api/custom_templates/create/standalone/string`
 - `deleteCustomTemplate` — `DELETE /api/custom_templates/{id}`
 
 ### Files:
+
 - Same pattern as registries
 
 ## Phase 8: Webhooks
 
 ### New tools:
+
 - `listWebhooks` — `GET /api/webhooks`
 - `createWebhook` — `POST /api/webhooks`
 - `deleteWebhook` — `DELETE /api/webhooks/{id}`
 
 ### Files:
+
 - Same pattern
 
 ## Phase 9: Update Environment (expanded)
 
 ### New tools:
+
 - `updateEnvironment` — `PUT /api/endpoints/{id}` (update name, URL, public IP, group assignment)
 
 ### Files:
+
 - Extend existing environment handler and client files
 
 ## Phase 10: Tests & Build Verification

@@ -66,9 +66,10 @@ const (
 	ToolUpdateSettings = "updateSettings"
 
 	// Registries
-	ToolListRegistries = "listRegistries"
-	ToolCreateRegistry = "createRegistry"
-	ToolDeleteRegistry = "deleteRegistry"
+	ToolListRegistries         = "listRegistries"
+	ToolCreateRegistry         = "createRegistry"
+	ToolDeleteRegistry         = "deleteRegistry"
+	ToolTestRegistryConnection = "testRegistryConnection"
 
 	// Edge Jobs
 	ToolListEdgeJobs  = "listEdgeJobs"
@@ -102,6 +103,14 @@ const (
 	ToolGetAlertingSettings = "getAlertingSettings"
 	ToolCreateAlertSilence  = "createAlertSilence"
 	ToolDeleteAlertSilence  = "deleteAlertSilence"
+
+	// Kubernetes Custom Resources
+	ToolListCustomResourceDefinitions  = "listCustomResourceDefinitions"
+	ToolGetCustomResourceDefinition    = "getCustomResourceDefinition"
+	ToolDeleteCustomResourceDefinition = "deleteCustomResourceDefinition"
+	ToolListCustomResources            = "listCustomResources"
+	ToolGetCustomResource              = "getCustomResource"
+	ToolDeleteCustomResource           = "deleteCustomResource"
 
 	// Docker Proxy
 	ToolDockerProxy = "dockerProxy"

@@ -13,6 +13,7 @@ import (
 
 func (s *PortainerMCPServer) AddRegistryFeatures() {
 	s.addToolIfExists(ToolListRegistries, s.HandleListRegistries())
+	s.addToolIfExists(ToolTestRegistryConnection, s.HandleTestRegistryConnection())
 
 	if !s.readOnly {
 		s.addToolIfExists(ToolCreateRegistry, s.HandleCreateRegistry())
@@ -103,5 +104,51 @@ func (s *PortainerMCPServer) HandleDeleteRegistry() server.ToolHandlerFunc {
 		}
 
 		return mcp.NewToolResultText("Registry deleted successfully"), nil
+	}
+}
+
+// HandleTestRegistryConnection returns a handler that tests a registry connection.
+func (s *PortainerMCPServer) HandleTestRegistryConnection() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		parser := toolgen.NewParameterParser(request)
+
+		url, err := parser.GetString("url", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid url parameter", err), nil
+		}
+
+		registryType, err := parser.GetInt("type", true)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid type parameter", err), nil
+		}
+
+		username, err := parser.GetString("username", false)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid username parameter", err), nil
+		}
+
+		password, err := parser.GetString("password", false)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("invalid password parameter", err), nil
+		}
+
+		req := models.RegistryPingRequest{
+			URL:      url,
+			Type:     registryType,
+			Username: username,
+			Password: password,
+		}
+
+		result, err := s.cli.PingRegistry(req)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to test registry connection", err), nil
+		}
+
+		data, err := json.Marshal(result)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to marshal ping result", err), nil
+		}
+
+		return mcp.NewToolResultText(string(data)), nil
 	}
 }
