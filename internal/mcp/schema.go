@@ -20,6 +20,7 @@ const (
 	ToolUpdateEnvironmentTags         = "updateEnvironmentTags"
 	ToolUpdateEnvironmentUserAccesses = "updateEnvironmentUserAccesses"
 	ToolUpdateEnvironmentTeamAccesses = "updateEnvironmentTeamAccesses"
+	ToolListAgentVersions             = "listAgentVersions"
 
 	// Environment Groups (Edge Groups)
 	ToolCreateEnvironmentGroup             = "createEnvironmentGroup"
@@ -103,6 +104,13 @@ const (
 	ToolGetAlertingSettings = "getAlertingSettings"
 	ToolCreateAlertSilence  = "createAlertSilence"
 	ToolDeleteAlertSilence  = "deleteAlertSilence"
+
+	// Policies
+	ToolListPolicies = "listPolicies"
+	ToolGetPolicy    = "getPolicy"
+	ToolCreatePolicy = "createPolicy"
+	ToolUpdatePolicy = "updatePolicy"
+	ToolDeletePolicy = "deletePolicy"
 
 	// Kubernetes Custom Resources
 	ToolListCustomResourceDefinitions  = "listCustomResourceDefinitions"

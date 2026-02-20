@@ -139,3 +139,17 @@ func (c *PortainerClient) UpdateEnvironment(id int, name, publicURL string, grou
 
 	return nil
 }
+
+// GetAgentVersions retrieves the list of available agent versions.
+//
+// Returns:
+//   - A slice of version strings
+//   - An error if the operation fails
+func (c *PortainerClient) GetAgentVersions() ([]string, error) {
+	var versions []string
+	if err := c.doJSONAPIRequest(http.MethodGet, "/endpoints/agent_versions", nil, &versions); err != nil {
+		return nil, fmt.Errorf("failed to list agent versions: %w", err)
+	}
+
+	return versions, nil
+}

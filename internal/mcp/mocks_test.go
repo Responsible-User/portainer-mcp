@@ -95,6 +95,14 @@ func (m *MockPortainerClient) UpdateEnvironment(id int, name, publicURL string, 
 	return args.Error(0)
 }
 
+func (m *MockPortainerClient) GetAgentVersions() ([]string, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]string), args.Error(1)
+}
+
 // Environment Group methods
 
 func (m *MockPortainerClient) GetEnvironmentGroups() ([]models.Group, error) {
@@ -492,6 +500,39 @@ func (m *MockPortainerClient) CreateAlertSilence(silenceJSON string, alertManage
 }
 
 func (m *MockPortainerClient) DeleteAlertSilence(id string) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// Policy methods
+
+func (m *MockPortainerClient) GetPolicies() ([]models.Policy, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.Policy), args.Error(1)
+}
+
+func (m *MockPortainerClient) GetPolicy(id int) (models.Policy, error) {
+	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.Policy{}, args.Error(1)
+	}
+	return args.Get(0).(models.Policy), args.Error(1)
+}
+
+func (m *MockPortainerClient) CreatePolicy(req models.PolicyCreateRequest) (int, error) {
+	args := m.Called(req)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockPortainerClient) UpdatePolicy(id int, req models.PolicyUpdateRequest) error {
+	args := m.Called(id, req)
+	return args.Error(0)
+}
+
+func (m *MockPortainerClient) DeletePolicy(id int) error {
 	args := m.Called(id)
 	return args.Error(0)
 }

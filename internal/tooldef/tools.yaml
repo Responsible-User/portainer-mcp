@@ -1,5 +1,5 @@
 ---
-version: v1.5
+version: v1.6
 tools:
   ## Access Groups
   ## An access group is the equivalent of an Endpoint Group in Portainer.
@@ -177,6 +177,14 @@ tools:
     description: List all available environments
     annotations:
       title: List Environments
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: listAgentVersions
+    description: List all available Portainer agent versions that can be used for environment onboarding.
+    annotations:
+      title: List Agent Versions
       readOnlyHint: true
       destructiveHint: false
       idempotentHint: true
@@ -1063,6 +1071,151 @@ tools:
       destructiveHint: false
       idempotentHint: true
       openWorldHint: true
+
+  ## Fleetwide Policies
+  ## Centralized policies that apply configuration, security rules, and cluster settings
+  ## across groups of environments. Experimental feature. Business Edition only.
+  ## ------------------------------------------------------------
+  - name: listPolicies
+    description: >-
+      List all fleetwide policies. Policies allow administrators to centrally configure
+      reusable settings that are automatically applied across all environments in a group.
+      Requires Fleet Management to be enabled in experimental features.
+    annotations:
+      title: List Policies
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: getPolicy
+    description: Get details of a specific fleetwide policy by ID.
+    parameters:
+      - name: id
+        description: The ID of the policy to retrieve
+        type: number
+        required: true
+    annotations:
+      title: Get Policy
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: createPolicy
+    description: >-
+      Create a new fleetwide policy. Policies centrally configure settings that are
+      applied across environments in the specified groups. Eight policy types are available.
+      Policy types: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+      rbac-docker, security-docker, setup-docker, registry-docker.
+      Environment types: kubernetes, docker, podman, swarm.
+    parameters:
+      - name: name
+        description: The name of the policy
+        type: string
+        required: true
+      - name: type
+        description: >-
+          The policy type. Valid values: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+          rbac-docker, security-docker, setup-docker, registry-docker
+        type: string
+        required: true
+        enum:
+          - rbac-k8s
+          - security-k8s
+          - setup-k8s
+          - registry-k8s
+          - rbac-docker
+          - security-docker
+          - setup-docker
+          - registry-docker
+      - name: environmentType
+        description: >-
+          The environment type this policy applies to. Valid values: kubernetes, docker, podman, swarm
+        type: string
+        required: true
+        enum:
+          - kubernetes
+          - docker
+          - podman
+          - swarm
+      - name: environmentGroups
+        description: "The IDs of the environment groups to apply this policy to. Example: [1, 2, 3]"
+        type: array
+        items:
+          type: number
+      - name: dataJSON
+        description: >-
+          A JSON string containing the policy-specific configuration data.
+          The structure depends on the policy type.
+        type: string
+    annotations:
+      title: Create Policy
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: false
+  - name: updatePolicy
+    description: >-
+      Update an existing fleetwide policy. Only provided fields will be updated.
+    parameters:
+      - name: id
+        description: The ID of the policy to update
+        type: number
+        required: true
+      - name: name
+        description: The name of the policy
+        type: string
+      - name: type
+        description: >-
+          The policy type. Valid values: rbac-k8s, security-k8s, setup-k8s, registry-k8s,
+          rbac-docker, security-docker, setup-docker, registry-docker
+        type: string
+        enum:
+          - rbac-k8s
+          - security-k8s
+          - setup-k8s
+          - registry-k8s
+          - rbac-docker
+          - security-docker
+          - setup-docker
+          - registry-docker
+      - name: environmentType
+        description: >-
+          The environment type this policy applies to. Valid values: kubernetes, docker, podman, swarm
+        type: string
+        enum:
+          - kubernetes
+          - docker
+          - podman
+          - swarm
+      - name: environmentGroups
+        description: "The IDs of the environment groups to apply this policy to. Example: [1, 2, 3]"
+        type: array
+        items:
+          type: number
+      - name: dataJSON
+        description: >-
+          A JSON string containing the policy-specific configuration data.
+          The structure depends on the policy type.
+        type: string
+    annotations:
+      title: Update Policy
+      readOnlyHint: false
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false
+  - name: deletePolicy
+    description: Delete a fleetwide policy.
+    parameters:
+      - name: id
+        description: The ID of the policy to delete
+        type: number
+        required: true
+    annotations:
+      title: Delete Policy
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: true
+      openWorldHint: false
 
   ## Kubernetes Custom Resources
   ## Custom Resource Definitions (CRDs) and their custom resource instances

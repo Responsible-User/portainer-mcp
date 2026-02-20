@@ -20,7 +20,7 @@ const (
 	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
 	MinSupportedPortainerVersion = "2.27.0"
 	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
-	MaxSupportedPortainerVersion = "2.36"
+	MaxSupportedPortainerVersion = "2.37"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
@@ -36,6 +36,7 @@ type PortainerClient interface {
 	UpdateEnvironmentUserAccesses(id int, userAccesses map[int]string) error
 	UpdateEnvironmentTeamAccesses(id int, teamAccesses map[int]string) error
 	UpdateEnvironment(id int, name, publicURL string, groupID int) error
+	GetAgentVersions() ([]string, error)
 
 	// Environment Group methods
 	GetEnvironmentGroups() ([]models.Group, error)
@@ -127,6 +128,13 @@ type PortainerClient interface {
 	GetAlertingSettings() ([]models.AlertingSettings, error)
 	CreateAlertSilence(silenceJSON string, alertManagerURL string) error
 	DeleteAlertSilence(id string) error
+
+	// Policy methods
+	GetPolicies() ([]models.Policy, error)
+	GetPolicy(id int) (models.Policy, error)
+	CreatePolicy(req models.PolicyCreateRequest) (int, error)
+	UpdatePolicy(id int, req models.PolicyUpdateRequest) error
+	DeletePolicy(id int) error
 
 	// Kubernetes Custom Resource methods
 	ListCustomResourceDefinitions(environmentID int) ([]models.CustomResourceDefinition, error)

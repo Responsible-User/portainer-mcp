@@ -11,6 +11,7 @@ import (
 
 func (s *PortainerMCPServer) AddEnvironmentFeatures() {
 	s.addToolIfExists(ToolListEnvironments, s.HandleGetEnvironments())
+	s.addToolIfExists(ToolListAgentVersions, s.HandleListAgentVersions())
 
 	if !s.readOnly {
 		s.addToolIfExists(ToolUpdateEnvironmentTags, s.HandleUpdateEnvironmentTags())
@@ -145,5 +146,22 @@ func (s *PortainerMCPServer) HandleUpdateEnvironment() server.ToolHandlerFunc {
 		}
 
 		return mcp.NewToolResultText("Environment updated successfully"), nil
+	}
+}
+
+// HandleListAgentVersions returns a handler that lists available agent versions.
+func (s *PortainerMCPServer) HandleListAgentVersions() server.ToolHandlerFunc {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		versions, err := s.cli.GetAgentVersions()
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to get agent versions", err), nil
+		}
+
+		data, err := json.Marshal(versions)
+		if err != nil {
+			return mcp.NewToolResultErrorFromErr("failed to marshal agent versions", err), nil
+		}
+
+		return mcp.NewToolResultText(string(data)), nil
 	}
 }
