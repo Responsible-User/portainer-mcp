@@ -20,7 +20,7 @@ const (
 	// MinSupportedPortainerVersion is the minimum version of Portainer supported by this tool
 	MinSupportedPortainerVersion = "2.27.0"
 	// MaxSupportedPortainerVersion is the maximum version of Portainer supported by this tool
-	MaxSupportedPortainerVersion = "2.34"
+	MaxSupportedPortainerVersion = "2.35"
 )
 
 // PortainerClient defines the interface for the wrapper client used by the MCP server
